@@ -1,6 +1,6 @@
 # Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# Add vnc as optional dependencies (Gentoo ebuild hard depend on vnc) 
+# Add vnc, lxc, spice as soft dependencies
 
 EAPI=6
 
@@ -22,7 +22,7 @@ HOMEPAGE="https://github.com/F1ash/qt-virt-manager"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="smartcard vnc"
+IUSE="lxc smartcard spice vnc"
 
 DEPEND="
 	dev-qt/qtcore:5
@@ -35,7 +35,7 @@ DEPEND="
 	>=x11-libs/qtermwidget-0.7.0
 	smartcard? ( >=app-emulation/libcacard-2.5.0 )
 	dev-libs/glib
-	net-misc/spice-gtk
+	spice? ( net-misc/spice-gtk )
 	vnc? ( >=net-libs/libvncserver-0.9.11-r1 )
 	app-emulation/libvirt
 "
@@ -46,6 +46,8 @@ src_configure() {
 		-DBUILD_QT_VERSION=5
 		-DWITH_LIBCACARD="$(usex smartcard ON OFF)"
 		-DWITH_VNC_SUPPORT="$(usex vnc ON OFF)"
+		-DWITH_SPICE_SUPPORT="$(usex spice ON OFF)"
+		-DWITH_LXC_SUPPORT="$(usex lxc ON OFF)"
 	)
 	cmake-utils_src_configure
 }

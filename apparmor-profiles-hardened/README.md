@@ -1,17 +1,17 @@
 # About
 
 Apparmor profiles hardened written to work on Gentoo musl. Keep in mind that 
-```
-systemd
-dbus 
-udev
-gtk+:3 
-```
+
+- systemd
+- dbus 
+- udev
+- gtk+:3 
+
 are not specified in any of thoses profiles since not installed on the current system.
  
 ## Firefox
 
--Firefox cannot browse any directory of the system
+- Firefox cannot browse any directory of the system
 - Addon/Extension installation restricted (in order to add an extension, download the xpi and add a apparmor rules to allow read on it and input the path of the extension in the url bar of Firefox)
 - Downloads restricted
 - Video/Sound and probably some other function in HTML5 restricted

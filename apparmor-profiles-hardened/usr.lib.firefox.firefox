@@ -1,0 +1,90 @@
+# Apparmor 2.12 -  Copyright (C) 2009-2018 Canonical Ltd.
+#
+# Hardened profile for Firefox 
+# Consult README for more info
+
+#include <tunables/global>
+
+# Path to the binary Firefox
+ /usr/lib/firefox/firefox {
+
+  # Basic deny
+  deny /usr/** w,
+  deny /etc/** w,
+  deny /opt/** rw,
+  deny /boot/** rw,
+
+  # ipv4 only
+  network inet stream,
+
+  # should maybe be in abstractions
+  owner /tmp/firefox**/lock wk, 
+  owner /tmp/firefox**/.parentlock wk,
+  /tmp/.X[0-9]*-lock r,
+
+  /etc/timezone r,
+  /etc/wildmidi/wildmidi.cfg r,
+
+  # Basic permission to launch Firefox
+
+  ## /etc conf
+  /etc/mtab r,
+  /etc/fstab r,
+  /etc/drirc r,
+  /etc/gre.d/* r,
+  /etc/mailcap r,
+  /etc/mime.types r,
+  /etc/ld-musl-x86_64.path r, 
+  /etc/localtime r,
+  /etc/hosts r,
+  /etc/fonts/** r,
+  /etc/resolv.conf r,
+  /etc/timezone r,
+  /etc/wildmidi/wildmidi.cfg r,
+
+  ## /proc conf
+
+  @{PROC}/@{pid}/cmdline r,
+  @{PROC}/@{pid}/mountinfo r,
+  @{PROC}/@{pid}/stat r,
+  @{PROC}/@{pid}/task/@{pid}/stat r,
+  @{PROC}/@{pid}/status r,
+  @{PROC}/@{pid}/route r,
+  @{PROC}/@{pid}/net/route r,
+
+   ## /sys /dev conf
+
+  /sys/devices//**/uevent r,
+  /dev/urandom r,
+  /dev/shm/org.chromium.* rw, # This need confirmation
+
+  ## /lib /usr /lib conf
+
+  /lib/* rm, # Could be more restrictive 
+  /usr/lib/* rm,
+  /usr/lib/gcc/x86_64-gentoo-linux-musl/{,[0-9].*}/libgcc_s.so.{[0-9],[0-9].*} rm,
+  /usr/lib/gcc/x86_64-gentoo-linux-musl/{,[0-9].*}/libstdc++.so.{[0-9],[0-9].*} rm,
+  /usr/lib/gtk-{,[0-9].*}/{,[0-9].*}/immodules.cache r, 
+  /usr/lib/gtk-{,[0-9].*}/{,[0-9].*}/engines/* rm,
+  /usr/lib/mesa/{,[a-z0-9]*}_dri.so  rm,
+  /usr/lib/llvm/5/lib/libLLVM{,[a-zA-Z0-9]*}.so.{,[0-9].*} rm,
+  /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders.cache r,
+  /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders/libpixbufloader-png.so rm,
+  /usr/lib/firefox/** r,
+  /usr/lib/firefox/plugin-container ix,
+  /usr/lib/firefox/{,[a-z]*}.so ixr,
+  /usr/share/fonts/** r,
+  /usr/share/mime/** r,
+  /usr/share/X11/locale/** r,
+  
+  ## /var conf
+  /var/cache/fontconfig/* r,
+
+  owner @{HOME}/.Xauthority r,
+  owner @{HOME}/.mozilla/firefox/profiles.ini r,
+  owner @{HOME}/.mozilla/firefox/*.default/**  rwk, # This should be improved 
+  owner @{HOME}/.{config,cache}/fontconfig/   r,
+  owner @{HOME}/.local/share/recently-used.xbel   r,
+  owner @{HOME}/.cache/mozilla/firefox/** r,
+  
+}

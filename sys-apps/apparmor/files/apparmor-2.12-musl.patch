@@ -9,7 +9,6 @@
 +typedef void (*__free_fn_t) (void *__nodep);
 +
 +#endif
-+
 --- a/parser_alias.c
 +++ b/parser_alias.c
 @@ -24,6 +24,7 @@
@@ -20,7 +19,6 @@
  
  struct alias_rule {
  	char *from;
-
 --- a/parser_symtab.c	
 +++ b/parser_symtab.c	
 @@ -24,6 +24,7 @@

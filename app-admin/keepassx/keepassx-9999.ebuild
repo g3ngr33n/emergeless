@@ -23,6 +23,9 @@ DEPEND="
        "
 
 src_prepare() {
+
+	# Fix build with PyQt-5.10.1-r1
+	local PATCHES=( "${FILESDIR}/PyQt5.10.patch")
 	cmake-utils_src_prepare
 }
 

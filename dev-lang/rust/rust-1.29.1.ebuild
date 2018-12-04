@@ -3,7 +3,7 @@
 
 EAPI=6
 
-LLVM_MAX_SLOT=6
+LLVM_MAX_SLOT=7
 PYTHON_COMPAT=( python2_7 python3_{5,6} pypy )
 
 inherit check-reqs eapi7-ver estack flag-o-matic llvm multiprocessing multilib-build python-any-r1 rust-toolchain toolchain-funcs

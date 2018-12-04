@@ -1,0 +1,12 @@
+# https://git.alpinelinux.org/cgit/aports/tree/community/rust/musl-fix-static-linking.patch
+--- a/src/librustc_codegen_llvm/back/link.rs
++++ b/src/librustc_codegen_llvm/back/link.rs
+@@ -1222,7 +1222,7 @@
+             None => continue,
+         };
+         match lib.kind {
+-            NativeLibraryKind::NativeUnknown => cmd.link_dylib(&name.as_str()),
++            NativeLibraryKind::NativeUnknown => if sess.crt_static() { cmd.link_staticlib(&name.as_str()) } else { cmd.link_dylib(&name.as_str()) },
+             NativeLibraryKind::NativeFramework => cmd.link_framework(&name.as_str()),
+             NativeLibraryKind::NativeStaticNobundle => cmd.link_staticlib(&name.as_str()),
+             NativeLibraryKind::NativeStatic => cmd.link_whole_staticlib(&name.as_str(),

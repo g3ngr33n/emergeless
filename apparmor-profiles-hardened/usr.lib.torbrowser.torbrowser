@@ -1,11 +1,10 @@
 # Apparmor 2.12 -  Copyright (C) 2009-2018 Canonical Ltd.
 #
-# Hardened profile for Torbrowser 
-# Consult README for more info
+# Hardened profile for torbrowser 60.4.0_p804
 
 #include <tunables/global>
 
-# Path to the binary Firefox
+# Path to the binary torbrowser
  /usr/lib/torbrowser/torbrowser {
 
   # Basic deny
@@ -17,6 +16,7 @@
   # ipv4 only
   network inet stream,
 
+  # should maybe be in abstractions
   owner /tmp/torbrowser**/lock wk, 
   owner /tmp/torbrowser**/.parentlock wk,
   /tmp/.X[0-9]*-lock r,
@@ -24,7 +24,7 @@
   /etc/timezone r,
   /etc/wildmidi/wildmidi.cfg r,
 
-  # Basic permission to launch Firefox
+  # Basic permission to launch torbrowser
 
   ## /etc conf
   /etc/mtab r,
@@ -39,6 +39,7 @@
   /etc/fonts/** r,
   /etc/resolv.conf r,
   /etc/timezone r,
+  /etc/ld.so.conf r,
   /etc/wildmidi/wildmidi.cfg r,
 
   ## /proc conf
@@ -50,13 +51,12 @@
   @{PROC}/@{pid}/status r,
   @{PROC}/@{pid}/route r,
   @{PROC}/@{pid}/net/route r,
-  @{PROC}/@{pid}/arp r,
 
    ## /sys /dev conf
 
   /sys/devices//**/uevent r,
   /dev/urandom r,
-  /dev/shm/org.chromium.* rw,
+  /dev/shm/org.chromium.* rw, # This need confirmation
 
   ## /lib /usr /lib conf
 
@@ -71,14 +71,12 @@
   /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders.cache r,
   /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders/libpixbufloader-png.so rm,
   /usr/lib/torbrowser/** r,
+  /usr/lib/torbrowser/torbrowser rix,
   /usr/lib/torbrowser/plugin-container ix,
-  /usr/lib/torbrowser/** r,
   /usr/lib/torbrowser/{,[a-z]*}.so ixr,
   /usr/share/fonts/** r,
   /usr/share/mime/** r,
-
-  /tmp/torbrowser**/lock wk, 
-  /tmp/torbrowser**/.parentlock wk,
+  /usr/share/X11/locale/** r,
   
   ## /var conf
   /var/cache/fontconfig/* r,
@@ -88,6 +86,6 @@
   owner @{HOME}/.mozilla/torbrowser/*.default/**  rwk, # This should be improved 
   owner @{HOME}/.{config,cache}/fontconfig/   r,
   owner @{HOME}/.local/share/recently-used.xbel   r,
-  owner @{HOME}/.cache/mozilla/torbrowser/** r,
- 
+  owner @{HOME}/.cache/mozilla/torbrowser/** rwk,
+  
 }

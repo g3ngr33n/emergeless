@@ -1,29 +1,37 @@
 # About
 
-Apparmor profiles hardened written to work on Gentoo musl. Keep in mind that 
+Apparmor profiles hardened written to work on Gentoo musl profile. The following are not specified in any of thoses profiles since not installed on the current system :
 
 - systemd
 - dbus 
 - udev
 
-are not specified in any of thoses profiles since not installed on the current system.
+Those apparmor profile are made to increase security in cost of breaking some functions/features.
  
 ## Firefox
 
 - Firefox cannot browser or read most of system (default allow read /)
-- Addon/Extension installation restricted (in order to add an extension, download the xpi and add a apparmor rules to allow read on it and input the path of the extension in the url bar of Firefox)
+- Addon/Extension installation restricted (To install an extension, disable temporary apparmor)
 - Downloads restricted
 - Video/Sound and probably some other function in HTML5 should work fine
-- Work with Firejail sandbox (do not enable --apparmor option of Firejail)
-- Firefox friend sync / Report crash / Data choices / Safebrowsing are restricted
+- Work with Firejail sandboxing (do not enable --apparmor option of Firejail)
+- Features as : Firefox friend / sync / Report crash / Data choices / Safebrowsing / Pocket restricted
 
-**Firefox will not start if no profile mozilla are available (.mozilla/firefox .cache/mozilla ...), run first firefox with apparmor disabled to create the basic directory / configuration file / cache... required.
+Consider to add the following hardening project for more security :
+
+- Firefox configuration hardening : https://github.com/pyllyukko/user.js/
+- uMatrix : https://github.com/gorhill/uMatrix
+
+**Firefox will not start if no profile are already available (.mozilla/firefox .cache/mozilla ...), run first firefox with apparmor disabled to create the basic directory / configuration file / cache... required.
 
 ## Torbrowser
 
 - torbrowser-launcher extension is not in scope
+- Similar restriction of the Firefox profile
 
-**Doesn't work with firejail sandbox
+Consider to set javascript.enabled to false in about:config. https://www.torproject.org/docs/faq.html.en#TBBJavaScriptEnabled
+
+**Torbrowser will not start if no profile are already available (.mozilla/torbrowser .cache/mozilla ...), run first torbrowser with apparmor disabled to create the basic directory / configuration file / cache... required.
 
 ## Copyright
 

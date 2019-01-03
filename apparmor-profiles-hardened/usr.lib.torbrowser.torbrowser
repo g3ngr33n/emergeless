@@ -82,10 +82,22 @@
   /var/cache/fontconfig/* r,
 
   owner @{HOME}/.Xauthority r,
+  owner @{HOME}/.{config,cache}/fontconfig/ r,
+  owner @{HOME}/.local/share/recently-used.xbel r,
+
+  # Torbrowser specific config files per profile
+
   owner @{HOME}/.mozilla/torbrowser/profiles.ini r,
-  owner @{HOME}/.mozilla/torbrowser/*.default/**  rwk, # This should be improved 
-  owner @{HOME}/.{config,cache}/fontconfig/   r,
-  owner @{HOME}/.local/share/recently-used.xbel   r,
-  owner @{HOME}/.cache/mozilla/torbrowser/** rwk,
+  owner @{HOME}/.mozilla/torbrowser/*.default/*.{txt,xml,html,ini,json,sqlite,js} rw,
+  owner @{HOME}/.mozilla/torbrowser/*.default/browser-extension-data/**  rwk,
+  owner @{HOME}/.mozilla/torbrowser/*.default/.parentwritetest rw,
+  owner @{HOME}/.mozilla/torbrowser/*.default/lock rw,
+  owner @{HOME}/.mozilla/torbrowser/*.default/.parentlock rwk,
+  deny owner @{HOME}/.mozilla/torbrowser/*.default/datareporting/** rw,  # Deny access to the Data reporting
+
+  # Torbrowser specific cache 
+
+  owner @{HOME}/.cache/mozilla/torbrowser/*.default/*.{json,json.tmp} rw,
+  owner @{HOME}/.cache/mozilla/torbrowser/*.default/startupCache/*.{bin,little} rw,
   
 }

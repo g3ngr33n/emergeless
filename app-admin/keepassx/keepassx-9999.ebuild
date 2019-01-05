@@ -27,7 +27,7 @@ DEPEND="
 src_prepare() {
 
 	# Fix build with qt5
-	local PATCHES=( "${FILESDIR}/PyQt5.10.patch")
+	local PATCHES=( "${FILESDIR}/qt5.patch")
 	cmake-utils_src_prepare
 }
 

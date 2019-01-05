@@ -22,16 +22,24 @@ Consider to add the following hardening project for more security :
 - Firefox configuration hardening : https://github.com/pyllyukko/user.js/
 - uMatrix : https://github.com/gorhill/uMatrix
 
-**Firefox will not start if no profile are already available (.mozilla/firefox .cache/mozilla ...), run first firefox with apparmor disabled to create the basic directory / configuration file / cache... required.
+** Firefox will not start if no profile are already available (.mozilla/firefox .cache/mozilla ...), run first firefox with apparmor disabled to create the basic directory / configuration file / cache... required.
 
 ## Torbrowser
 
-- torbrowser-launcher extension is not in scope
+- torbutton plugins and noscript are now working
 - Similar restriction of the Firefox profile
 
-Consider to set javascript.enabled to false in about:config. https://www.torproject.org/docs/faq.html.en#TBBJavaScriptEnabled
+Consider to set Safest level in the Security settings of the torbutton or set javascript.enabled to false in about:config
 
-**Torbrowser will not start if no profile are already available (.mozilla/torbrowser .cache/mozilla ...), run first torbrowser with apparmor disabled to create the basic directory / configuration file / cache... required.
+** Torbrowser will not start if no profile are already available (.mozilla/torbrowser .cache/mozilla ...), run first torbrowser with apparmor disabled to create the basic directory / configuration file / cache... required.
+
+## Keepassx
+
+- Network access disabled 
+- Written for Qt5.x <
+- All features are working
+
+** Small issue, When you select Open database, the dialog will show your currrent directory / home as empty, simply enter in the input field "File name" your database name to open it.
 
 ## Copyright
 

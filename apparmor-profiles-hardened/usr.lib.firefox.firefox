@@ -1,4 +1,4 @@
-# Apparmor 2.12 -  Copyright (C) 2009-2018 Canonical Ltd.
+# Apparmor 2.13.1 -  Copyright (C) 2009-2018 Canonical Ltd.
 #
 # Hardened profile for firefox 60.4
 
@@ -18,11 +18,7 @@
 
   network inet stream,
 
-  # should maybe be in abstractions
-
-  owner /tmp/firefox** rwk, 
-
-  ## /etc conf
+  # /etc conf
 
   /etc/mtab r,
   /etc/fstab r,
@@ -39,7 +35,7 @@
   /etc/ld.so.conf r,
   /etc/gtk-3.0/settings.ini r,
 
-  ## /proc conf
+  # /proc conf
 
   @{PROC}/@{pid}/cmdline r,
   @{PROC}/@{pid}/mountinfo r,
@@ -49,16 +45,16 @@
   @{PROC}/@{pid}/route r,
   @{PROC}/@{pid}/net/route r,
 
-   ## /sys
+   # /sys
 
   /sys/devices/**/uevent r,
 
-  ## /dev
+  # /dev
 
   /dev/urandom r,
   /dev/shm/org.chromium.* rw, # This need confirmation
 
-  ## /lib
+  # /lib
 
   /lib/libz* rm,
   /lib/libmount* rm,
@@ -67,7 +63,7 @@
   /lib/libbz2* rm,
   /lib/libblkid* rm,
 
-  ## /usr/lib
+  # /usr/lib
 
   /usr/lib/libfreebl3* rm,
   /usr/lib/libpixman-1* rm,
@@ -144,7 +140,7 @@
   /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders.cache r,
   /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders/libpixbufloader*.so rm,
    
-  ## Firefox lib/binary directory
+  # Firefox lib/binary directory
 
   /usr/lib/firefox/** r,
   /usr/lib/firefox/firefox ix,
@@ -159,12 +155,14 @@
   /usr/share/glib-2.0/schemas/gschemas.compiled r,
   /var/cache/fontconfig/* r,
   
-  ## Basic user files 
+  # Basic user files 
+
   owner @{HOME}/.Xauthority r,
   owner @{HOME}/.{config,cache}/fontconfig/ r,
   owner @{HOME}/.local/share/recently-used.xbel r,
 
-  ## Firefox specific config files per profile
+  # Firefox specific config files per profile
+
   owner @{HOME}/.mozilla/firefox/profiles.ini r,
   owner @{HOME}/.mozilla/firefox/*.default/** r,
   owner @{HOME}/.mozilla/firefox/*.default/*.{txt,xml,html,ini,json,sqlite,js,lz4,tmp,sqlite-wal,bak,sqlite-shm,sqlite-journal,db} wk,
@@ -173,13 +171,16 @@
   owner @{HOME}/.mozilla/firefox/*.default/storage/permanent/chrome/idb/*.sqlite wk,
   owner @{HOME}/.mozilla/firefox/*.default/.parentlock wk,
 
-   ## Firefox specific cache 
+   # Firefox specific cache 
+
   owner @{HOME}/.cache/mozilla/firefox/*.default/** rw,
   
-  ## Deny data reporting
+  # Deny data reporting
+
   deny owner @{HOME}/.mozilla/firefox/*.default/datareporting/** rwk,
 
-  ## Deny safebrowsing
+  # Deny safebrowsing
+
   deny owner @{HOME}/.cache/mozilla/firefox/*.default/safebrowsing/** rwk,
   
 }

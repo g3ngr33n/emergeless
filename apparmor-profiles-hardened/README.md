@@ -14,11 +14,11 @@ Those apparmor profile are made to increase security in cost of breaking some fu
 - Addon/Extension installation restricted (To install an extension, disable temporary apparmor)
 - Downloads restricted
 - Video/Sound and probably some other function in HTML5 should work fine
-- Work with Firejail sandboxing (do not enable --apparmor option of Firejail)
-- Features as : Firefox friend / sync / Report crash / Data choices / Safebrowsing / Pocket restricted
+- Features as : Firefox friend / sync / Report crash / Data choices / Safebrowsing / Pocket... restricted
 
 Consider to add the following hardening project for more security :
 
+- Simple sandbox : https://wiki.gentoo.org/wiki/Simple_sandbox
 - Firefox configuration hardening : https://github.com/pyllyukko/user.js/
 - uMatrix : https://github.com/gorhill/uMatrix
 

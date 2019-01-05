@@ -1,33 +1,29 @@
 # Apparmor 2.12 -  Copyright (C) 2009-2018 Canonical Ltd.
 #
-# Hardened profile for Firefox 
-# Consult README for more info
+# Hardened profile for firefox 60.4
 
 #include <tunables/global>
 
-# Path to the binary Firefox
- /usr/lib/firefox/firefox {
+# Path to the binary
+/usr/lib/firefox/firefox {
 
   # Basic deny
+
   deny /usr/** w,
   deny /etc/** w,
   deny /opt/** rw,
   deny /boot/** rw,
 
   # ipv4 only
+
   network inet stream,
 
   # should maybe be in abstractions
-  owner /tmp/firefox**/lock wk, 
-  owner /tmp/firefox**/.parentlock wk,
-  /tmp/.X[0-9]*-lock r,
 
-  /etc/timezone r,
-  /etc/wildmidi/wildmidi.cfg r,
-
-  # Basic permission to launch Firefox
+  owner /tmp/firefox** rwk, 
 
   ## /etc conf
+
   /etc/mtab r,
   /etc/fstab r,
   /etc/drirc r,
@@ -40,7 +36,8 @@
   /etc/fonts/** r,
   /etc/resolv.conf r,
   /etc/timezone r,
-  /etc/wildmidi/wildmidi.cfg r,
+  /etc/ld.so.conf r,
+  /etc/gtk-3.0/settings.ini r,
 
   ## /proc conf
 
@@ -52,39 +49,137 @@
   @{PROC}/@{pid}/route r,
   @{PROC}/@{pid}/net/route r,
 
-   ## /sys /dev conf
+   ## /sys
 
-  /sys/devices//**/uevent r,
+  /sys/devices/**/uevent r,
+
+  ## /dev
+
   /dev/urandom r,
   /dev/shm/org.chromium.* rw, # This need confirmation
 
-  ## /lib /usr /lib conf
+  ## /lib
 
-  /lib/* rm, # Could be more restrictive 
-  /usr/lib/* rm,
+  /lib/libz* rm,
+  /lib/libmount* rm,
+  /lib/libpcre* rm,
+  /lib/libuuid* rm,
+  /lib/libbz2* rm,
+  /lib/libblkid* rm,
+
+  ## /usr/lib
+
+  /usr/lib/libfreebl3* rm,
+  /usr/lib/libpixman-1* rm,
+  /usr/lib/libsoftokn3* rm,
+  /usr/lib/libxshmfence* rm,
+  /usr/lib/libxcb-sync* rm,
+  /usr/lib/libxcb-present* rm,
+  /usr/lib/libxcb-dri3* rm,
+  /usr/lib/libXxf86vm* rm,
+  /usr/lib/libxcb-dri2* rm,
+  /usr/lib/libxcb-glx* rm,
+  /usr/lib/libdrm* rm,
+  /usr/lib/libglapi* rm,
+  /usr/lib/libGL* rm,
+  /usr/lib/libICE* rm,
+  /usr/lib/libSM* rm,
+  /usr/lib/libicudata* rm,
+  /usr/lib/libXt* rm,
+  /usr/lib/libxcb-shm* rm,  
+  /usr/lib/libasound* rm,
+  /usr/lib/libvpx* rm,
+  /usr/lib/libevent-2.1* rm,
+  /usr/lib/libhunspell-1.6* rm,
+  /usr/lib/libjpeg* rm,
+  /usr/lib/libsqlite3* rm,
+  /usr/lib/libnspr4* rm,
+  /usr/lib/libgtk-3* rm,
+  /usr/lib/libgdk-3* rm,
+  /usr/lib/libgmodule-2.0* rm,
+  /usr/lib/libpangocairo-1.0* rm,
+  /usr/lib/libX11* rm,
+  /usr/lib/libXi* rm,
+  /usr/lib/libXfixes* rm,
+  /usr/lib/libcairo* rm,
+  /usr/lib/libcairo-gobject* rm,
+  /usr/lib/libgdk_pixbuf-2.0* rm,
+  /usr/lib/libatk-1.0* rm,
+  /usr/lib/libepoxy* rm,
+  /usr/lib/libgio-2.0* rm,
+  /usr/lib/libharfbuzz* rm,
+  /usr/lib/libpangoft2-1.0* rm,
+  /usr/lib/libpango-1.0* rm,
+  /usr/lib/libgobject-2.0* rm,
+  /usr/lib/libglib-2.0* rm,
+  /usr/lib/libfontconfig* rm,
+  /usr/lib/libfreetype* rm,
+  /usr/lib/libXrandr* rm,
+  /usr/lib/libXcursor* rm,
+  /usr/lib/libXcomposite* rm,
+  /usr/lib/libXdamage* rm,
+  /usr/lib/libXext* rm,
+  /usr/lib/libxcb* rm,
+  /usr/lib/libpixman-1* rm,
+  /usr/lib/libpng16* rm,
+  /usr/lib/libXrender* rm,
+  /usr/lib/libgraphite2* rm,
+  /usr/lib/libfribidi* rm,
+  /usr/lib/libffi* rm,
+  /usr/lib/libexpat* rm,
+  /usr/lib/libXau* rm,
+  /usr/lib/libXdmcp* rm,
+  /usr/lib/libicui18n* rm,
+  /usr/lib/libicuuc* rm,
+  /usr/lib/libX11-xcb* rm,
+  /usr/lib/libplds4* rm,
+  /usr/lib/libplc4* rm,
+  /usr/lib/libssl* rm,
+  /usr/lib/libnss* rm,
+  /usr/lib/libsmime3* rm,
   /usr/lib/gcc/x86_64-gentoo-linux-musl/{,[0-9].*}/libgcc_s.so.{[0-9],[0-9].*} rm,
   /usr/lib/gcc/x86_64-gentoo-linux-musl/{,[0-9].*}/libstdc++.so.{[0-9],[0-9].*} rm,
-  /usr/lib/gtk-{,[0-9].*}/{,[0-9].*}/immodules.cache r, 
-  /usr/lib/gtk-{,[0-9].*}/{,[0-9].*}/engines/* rm,
-  /usr/lib/mesa/{,[a-z0-9]*}_dri.so  rm,
-  /usr/lib/llvm/5/lib/libLLVM{,[a-zA-Z0-9]*}.so.{,[0-9].*} rm,
+  /usr/lib/gtk-3/{,[0-9].*}/immodules.cache r, 
+  /usr/lib/gtk-3/{,[0-9].*}/engines/* rm,
   /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders.cache r,
-  /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders/libpixbufloader-png.so rm,
+  /usr/lib/gdk-pixbuf-{,[0-9].*}/{,[0-9].*}/loaders/libpixbufloader*.so rm,
+   
+  ## Firefox lib/binary directory
+
   /usr/lib/firefox/** r,
+  /usr/lib/firefox/firefox ix,
   /usr/lib/firefox/plugin-container ix,
-  /usr/lib/firefox/{,[a-z]*}.so ixr,
+  /usr/lib/firefox/{,[a-z]*}.so m,
+
+  # Font
+
   /usr/share/fonts/** r,
   /usr/share/mime/** r,
   /usr/share/X11/locale/** r,
-  
-  ## /var conf
+  /usr/share/glib-2.0/schemas/gschemas.compiled r,
   /var/cache/fontconfig/* r,
-
+  
+  ## Basic user files 
   owner @{HOME}/.Xauthority r,
+  owner @{HOME}/.{config,cache}/fontconfig/ r,
+  owner @{HOME}/.local/share/recently-used.xbel r,
+
+  ## Firefox specific config files per profile
   owner @{HOME}/.mozilla/firefox/profiles.ini r,
-  owner @{HOME}/.mozilla/firefox/*.default/**  rwk, # This should be improved 
-  owner @{HOME}/.{config,cache}/fontconfig/   r,
-  owner @{HOME}/.local/share/recently-used.xbel   r,
-  owner @{HOME}/.cache/mozilla/firefox/** r,
+  owner @{HOME}/.mozilla/firefox/*.default/** r,
+  owner @{HOME}/.mozilla/firefox/*.default/*.{txt,xml,html,ini,json,sqlite,js,lz4,tmp,sqlite-wal,bak,sqlite-shm,sqlite-journal,db} wk,
+  owner @{HOME}/.mozilla/firefox/*.default/browser-extension-data/*/*.{js,tmp}  w,
+  owner @{HOME}/.mozilla/firefox/*.default/lock w,
+  owner @{HOME}/.mozilla/firefox/*.default/storage/permanent/chrome/idb/*.sqlite wk,
+  owner @{HOME}/.mozilla/firefox/*.default/.parentlock wk,
+
+   ## Firefox specific cache 
+  owner @{HOME}/.cache/mozilla/firefox/*.default/** rw,
+  
+  ## Deny data reporting
+  deny owner @{HOME}/.mozilla/firefox/*.default/datareporting/** rwk,
+
+  ## Deny safebrowsing
+  deny owner @{HOME}/.cache/mozilla/firefox/*.default/safebrowsing/** rwk,
   
 }

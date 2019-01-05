@@ -19,12 +19,14 @@ DEPEND="
 	dev-libs/libgcrypt
 	dev-qt/qtcore:5
 	dev-qt/qtgui:5
+        dev-qt/qttest:5
+        dev-qt/qtconcurrent:5
 	x11-libs/libXtst
        "
 
 src_prepare() {
 
-	# Fix build with PyQt-5.10.1-r1
+	# Fix build with qt5
 	local PATCHES=( "${FILESDIR}/PyQt5.10.patch")
 	cmake-utils_src_prepare
 }

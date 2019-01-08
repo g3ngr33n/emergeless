@@ -6,21 +6,25 @@ Apparmor profiles hardened written to work on Gentoo musl profile. The following
 - dbus 
 - udev
 
-Those apparmor profile are made to increase security in cost of breaking some functions/features.
+Those apparmor profile are made to increase security/privacy and willingly broke some functions / features to do so. 
  
 ## Firefox
 
-- Firefox cannot browser or read most of system (default allow read /)
+Default configuration offered by Firefox are not made to offer any privacy. Safebrowsing, Telemetry, aufofill, followonsearch, activity stream... More and more features harmful for your privacy are integrated in each new
+version of Firefox.  Using about:config  is not fully reliable to get ride of it.
+
+- Firefox  restrict read over the whole system (default allow read /)
 - Addon/Extension installation restricted (To install an extension, disable temporary apparmor)
 - Downloads restricted
-- Video/Sound and probably some other function in HTML5 should work fine
-- Features as : Firefox friend / sync / Report crash / Data choices / Safebrowsing / Pocket... restricted
+- Html5 video restricted 
+- Disable Pocket, Screenshot, Followonsearch, Form autofill, Activity stream, Safebrowsing, Telemetry...
 
 Consider to add the following hardening project for more security :
 
 - Simple sandbox : https://wiki.gentoo.org/wiki/Simple_sandbox
 - Firefox configuration hardening : https://github.com/pyllyukko/user.js/
 - uMatrix : https://github.com/gorhill/uMatrix
+-
 
 ** Firefox will not start if no profile are already available (.mozilla/firefox .cache/mozilla ...), run first firefox with apparmor disabled to create the basic directory / configuration file / cache... required.
 

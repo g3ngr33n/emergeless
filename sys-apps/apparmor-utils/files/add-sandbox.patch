@@ -1,0 +1,12 @@
+--- a/utils/Makefile
++++ b/utils/patch
+@@ -23,7 +23,7 @@
+ PERLTOOLS = aa-notify
+ PYTOOLS = aa-easyprof aa-genprof aa-logprof aa-cleanprof aa-mergeprof \
+           aa-autodep aa-audit aa-complain aa-enforce aa-disable \
+-	  aa-status aa-unconfined
++	  aa-status aa-unconfined aa-sandbox
+ TOOLS = ${PERLTOOLS} ${PYTOOLS} aa-decode aa-remove-unknown
+ PYSETUP = python-tools-setup.py
+ PYMODULES = $(wildcard apparmor/*.py apparmor/rule/*.py)
+

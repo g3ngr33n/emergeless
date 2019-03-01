@@ -22,7 +22,7 @@ HOMEPAGE="https://github.com/F1ash/qt-virt-manager"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="lxc smartcard spice vnc"
+IUSE="lxc smartcard spice spice_audio vnc"
 
 DEPEND="
 	dev-qt/qtcore:5
@@ -41,12 +41,17 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
+PATCHES=(
+	"${FILESDIR}"/fix-qDebug.patch
+)
+
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_QT_VERSION=5
 		-DWITH_LIBCACARD="$(usex smartcard ON OFF)"
 		-DWITH_VNC_SUPPORT="$(usex vnc ON OFF)"
 		-DWITH_SPICE_SUPPORT="$(usex spice ON OFF)"
+      -DUSE_SPICE_AUDIO="$(usex spice_audio ON OFF)"
 		-DWITH_LXC_SUPPORT="$(usex lxc ON OFF)"
 	)
 	cmake-utils_src_configure

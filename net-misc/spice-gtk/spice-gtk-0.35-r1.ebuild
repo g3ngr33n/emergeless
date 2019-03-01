@@ -63,8 +63,9 @@ RDEPEND="
 		>=net-libs/libsoup-2.49.91 )
 "
 DEPEND="${RDEPEND}
-	>=app-emulation/spice-protocol-0.12.14
+	>=app-emulation/spice-protocol-0.12.15
 	dev-perl/Text-CSV
+	>=dev-libs/json-glib-1.0
 	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.40.0
 	>=sys-devel/gettext-0.17
@@ -75,7 +76,7 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${PN}-0.34-openssl11.patch
 	"${FILESDIR}"/spicy-hide-menubar.patch
-	"${FILESDIR}"/spicy-fix-crash.patch
+	"${FILESDIR}"/spice-channel-webdav-fix.patch
 )
 
 src_prepare() {

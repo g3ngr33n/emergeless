@@ -34,7 +34,7 @@ inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6
 #mozlinguas-v2
 
 DESCRIPTION="Waterfox Web Browser"
-HOMEPAGE="http://www.waterfoxproject.org"
+HOMEPAGE="https://www.waterfox.net"
 
 KEYWORDS="~amd64 ~x86"
 

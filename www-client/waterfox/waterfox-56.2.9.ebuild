@@ -299,10 +299,6 @@ src_install() {
 		|| die
 	fi
 
-	echo "pref(\"extensions.autoDisableScopes\", 3);" >> \
-		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
-		|| die
-
 	if use nsplugin; then
 		echo "pref(\"plugin.load_flash_only\", false);" >> \
 			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \

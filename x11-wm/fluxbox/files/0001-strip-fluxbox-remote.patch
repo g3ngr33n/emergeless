@@ -1,4 +1,3 @@
-Remove from the Fluxbox source, the odd and dangerous function "fluxbox-remote". This function should be optional, wtf.
 --- a/src/ScreenResource.cc
 +++ b/src/ScreenResource.cc
 @@ -103,7 +103,6 @@
@@ -466,15 +465,3 @@ Remove from the Fluxbox source, the odd and dangerous function "fluxbox-remote".
  	doc/fluxbox-style.5.in \
  	doc/fluxbox.1.in \
  	doc/startfluxbox.1.in
-
---- a/doc/fluxbox.1
-+++ b/doc/fluxbox.1
-@@ -2171,7 +2171,7 @@
- If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
- .SH "SEE ALSO"
- .sp
--fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fluxbox\-remote(1) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)
-+fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)
- .SH "AUTHOR"
- .PP
- \fBHenrik Kinnunen\fR <\&fluxgen@fluxbox\&.org\&>

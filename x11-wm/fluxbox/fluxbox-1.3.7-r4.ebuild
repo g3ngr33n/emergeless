@@ -1,8 +1,9 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
-inherit eutils flag-o-matic toolchain-funcs prefix xdg xdg-utils
+EAPI=7
+
+inherit autotools toolchain-funcs
 
 IUSE="nls xinerama bidi +truetype +imlib +slit +systray +toolbar vim-syntax"
 
@@ -32,78 +33,54 @@ RDEPEND="
 	xinerama? ( x11-libs/libXinerama )
 	|| ( x11-misc/gxmessage x11-apps/xmessage )
 "
-WANT_AUTOMAKE=1.14
 
 DEPEND="
 	${RDEPEND}
 	bidi? ( virtual/pkgconfig )
 	nls? ( sys-devel/gettext )
 	x11-base/xorg-proto
-	sys-devel/automake:${WANT_AUTOMAKE}
 "
+
+PATCHES=(
+	"${FILESDIR}"/0001-strip-fluxbox-remote.patch
+	"${FILESDIR}"/0002-fix-nls-musl.patch
+)
 
 src_prepare() {
 
-	# This absolutely need to be OPTIONAL.
-	epatch "${FILESDIR}"/0001-strip-fluxbox-remote.patch
-
-	# We need to be able to include directories rather than just plain
-	# files in menu [include] items. This patch will allow us to do clever
-	# things with style ebuilds.
-	epatch "${FILESDIR}"/gentoo_style_location-1.1.x.patch
-
-	eprefixify util/fluxbox-generate_menu.in
-
-	epatch "${FILESDIR}"/osx-has-otool.patch
-
-	# Fix bug #551522; 1.3.8 will render this obsolete
-	epatch "${FILESDIR}"/fix-hidden-toolbar.patch
-
-	# Add in the Gentoo -r number to fluxbox -version output.
-	if [[ "${PR}" == "r0" ]] ; then
-		suffix="gentoo"
-	else
-		suffix="gentoo-${PR}"
-	fi
-	sed -i \
-		-e "s~\(__fluxbox_version .@VERSION@\)~\1-${suffix}~" \
-		version.h.in || die "version sed failed"
-
+	default
+	eautoreconf
 }
 
 src_configure() {
-	xdg_environment_reset
-	use bidi && append-cppflags "$($(tc-getPKG_CONFIG) --cflags fribidi)"
 
-	econf $(use_enable bidi fribidi ) \
-		$(use_enable imlib imlib2) \
-		$(use_enable nls) \
-		$(use_enable slit ) \
-		$(use_enable systray ) \
-		$(use_enable toolbar ) \
-		$(use_enable truetype xft) \
-		$(use_enable xinerama) \
+	local myeconfargs=(
+		$(use_enable imlib imlib2)
+		$(use_enable bidi fribidi)
+		$(use_enable slit)
+		$(use_enable systray)
+		$(use_enable toolbar)
+		$(use_enable truetype xft)
+		$(use_enable xinerama)
 		--sysconfdir="${EPREFIX}"/etc/X11/${PN} \
 		--with-style="${EPREFIX}"/usr/share/fluxbox/styles/Emerge
 
+	)
 
+	if ! use nls; then
+	local myeconfargs=( --disable-nls )
+	fi
+
+	econf "${myeconfargs[@]}"
 }
 
 src_compile() {
 	default
 
-	ebegin "Creating a menu file (may take a while)"
-	mkdir -p "${T}/home/.fluxbox" || die "mkdir home failed"
-	# Call fluxbox-generate_menu through bash since it lacks +x
-	# chmod 744 may be an equal fix
-	MENUFILENAME="${S}/data/menu" MENUTITLE="Fluxbox ${PV}" \
-		CHECKINIT="no. go away." HOME="${T}/home" \
-		bash "${S}/util/fluxbox-generate_menu" -is -ds \
-		|| die "menu generation failed"
-	eend $?
 }
 
 src_install() {
+
 	emake DESTDIR="${D}" STRIP="" install
 	dodoc README* AUTHORS TODO* ChangeLog NEWS
 

@@ -1,12 +1,10 @@
-# Copyright 1999-2018 Gentoo Authors
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 GCONF_DEBUG="no"
-VALA_MIN_API_VERSION="0.14"
-VALA_USE_DEPEND="vapigen"
 
-inherit autotools eutils xdg-utils vala readme.gentoo-r1
+inherit autotools eutils xdg-utils readme.gentoo-r1
 
 DESCRIPTION="Set of GObject and Gtk objects for connecting to Spice servers and a client GUI"
 HOMEPAGE="https://www.spice-space.org https://cgit.freedesktop.org/spice/spice-gtk/"
@@ -15,9 +13,7 @@ LICENSE="LGPL-2.1"
 SLOT="0"
 SRC_URI="https://www.spice-space.org/download/gtk/${P}.tar.bz2"
 KEYWORDS="~alpha amd64 ~arm ~ia64 ~ppc ~ppc64 ~sparc x86"
-IUSE="dbus gstaudio gstvideo +gtk3 +introspection lz4 mjpeg policykit pulseaudio sasl smartcard static-libs usbredir vala webdav libressl"
-
-REQUIRED_USE="?? ( pulseaudio gstaudio )"
+IUSE="-dbus -gstaudio -gstvideo +gtk3 introspection lz4 mjpeg policykit pulseaudio sasl smartcard static-libs usbredir webdav libressl"
 
 # TODO:
 # * check if sys-freebsd/freebsd-lib (from virtual/acl) provides acl/libacl.h
@@ -39,7 +35,7 @@ RDEPEND="
 	>=x11-libs/pixman-0.17.7
 	media-libs/opus
 	gtk3? ( x11-libs/gtk+:3[introspection?] )
-	>=dev-libs/glib-2.36:2
+	>=dev-libs/glib-2.46:2
 	>=x11-libs/cairo-1.2
 	virtual/jpeg:0=
 	sys-libs/zlib
@@ -59,22 +55,22 @@ RDEPEND="
 		)
 	webdav? (
 		net-libs/phodav:2.0
-		>=dev-libs/glib-2.43.90:2
 		>=net-libs/libsoup-2.49.91 )
 "
 DEPEND="${RDEPEND}
 	>=app-emulation/spice-protocol-0.12.14
 	dev-perl/Text-CSV
+	dev-util/glib-utils
 	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.40.0
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
-	vala? ( $(vala_depend) )
 "
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-0.34-openssl11.patch
-	"${FILESDIR}"/spicy-hide-menubar.patch
+	"${FILESDIR}"/0001-add-qmp.patch
+	"${FILESDIR}"/0002-qmp-h.patch
+	"${FILESDIR}"/0003-qmp-c.patch
 )
 
 src_prepare() {
@@ -85,26 +81,18 @@ src_prepare() {
 	default
 
 	eautoreconf
-
-	use vala && vala_src_prepare
 }
 
 src_configure() {
 	# Prevent sandbox violations, bug #581836
 	# https://bugzilla.gnome.org/show_bug.cgi?id=744134
 	# https://bugzilla.gnome.org/show_bug.cgi?id=744135
-	addpredict /dev
+	# addpredict /dev
 
 	# Clean up environment, bug #586642
 	xdg_environment_reset
 
 	local myconf
-
-	if use vala ; then
-		# force vala regen for MinGW, etc
-		rm -fv gtk/controller/controller.{c,vala.stamp} gtk/controller/menu.c
-	fi
-
 	myconf="
 		$(use_enable static-libs static)
 		$(use_enable introspection)
@@ -119,7 +107,6 @@ src_configure() {
 		$(use_enable gstaudio)
 		$(use_enable gstvideo)
 		$(use_enable mjpeg builtin-mjpeg)
-		$(use_enable vala)
 		$(use_enable webdav)
 		$(use_enable dbus)
 		--disable-celt051
@@ -135,7 +122,7 @@ src_compile() {
 	# Prevent sandbox violations, bug #581836
 	# https://bugzilla.gnome.org/show_bug.cgi?id=744134
 	# https://bugzilla.gnome.org/show_bug.cgi?id=744135
-	addpredict /dev
+	# addpredict /dev
 
 	default
 }

@@ -1,8 +1,8 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
-inherit gnome2
+EAPI=7
+inherit autotools toolchain-funcs xdg-utils
 
 DESCRIPTION="Graphical console client for connecting to virtual machines"
 HOMEPAGE="http://virt-manager.org/"
@@ -11,7 +11,7 @@ SRC_URI="http://virt-manager.org/download/sources/${PN}/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="sasl +spice -vnc -libvirtd"
+IUSE="sasl +spice -vnc -libvirtd +vte"
 
 RDEPEND="libvirtd? ( >=app-emulation/libvirt-0.10.0[sasl?]
 	app-emulation/libvirt-glib
@@ -23,17 +23,51 @@ DEPEND="${RDEPEND}
 	dev-lang/perl
 	>=dev-util/intltool-0.35.0
 	virtual/pkgconfig
-	spice? ( >=app-emulation/spice-protocol-0.12.10 )"
+	spice? ( >=app-emulation/spice-protocol-0.12.15 )"
 
 REQUIRED_USE="|| ( spice vnc )"
 
 PATCHES=(
 	"${FILESDIR}"/0001-hook-qmp.patch
 	)
+
 src_configure() {
-	gnome2_src_configure \
+
+	local myeconfargs=(
 		--disable-update-mimedb \
-		--without-ovirt \
-		$(use_with vnc gtk-vnc) \
-		$(use_with spice spice-gtk)
+		--without-ovirt
+	)
+
+	if ! use vnc; then
+	local myeconfargs=( --without-gtk-vnc )
+	fi
+
+	if ! use spice; then
+	local myeconfargs=( --without-spice-gtk )
+	fi
+
+	if ! use libvirtd; then
+	local myeconfargs=( --without-libvirt )
+	fi
+
+	if ! use vte; then
+	local myeconfargs=( --without-vte )
+	fi
+
+	econf "${myeconfargs[@]}"
+}
+
+src_compile() {
+	default
+
+}
+
+pkg_postinst() {
+	xdg_desktop_database_update
+	xdg_mimeinfo_database_update
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	default
 }

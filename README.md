@@ -1,3 +1,5 @@
-## Emergeless
+Emergeless
+===========================
 
-### Required dependency are not mandatory !
+- Required dependency are not mandatory
+- Improving by removing

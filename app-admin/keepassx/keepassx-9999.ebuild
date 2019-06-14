@@ -1,8 +1,7 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-# Minimal and dbus less ebuild for KeepassX
 
-EAPI=6
+EAPI=7
 
 inherit cmake-utils git-r3
 
@@ -19,10 +18,10 @@ DEPEND="
 	dev-libs/libgcrypt
 	dev-qt/qtcore:5
 	dev-qt/qtgui:5
-        dev-qt/qttest:5
-        dev-qt/qtconcurrent:5
+	dev-qt/qttest:5
+	dev-qt/qtconcurrent:5
 	x11-libs/libXtst
-       "
+	"
 
 src_prepare() {
 
@@ -30,8 +29,10 @@ src_prepare() {
 }
 
 src_configure() {
-        local mycmakeargs=(
-                -DCMAKE_BUILD_TYPE=Release
-        )
+
+	local mycmakeargs=(
+	-DCMAKE_BUILD_TYPE=Release
+	)
+
 	cmake-utils_src_configure
 }

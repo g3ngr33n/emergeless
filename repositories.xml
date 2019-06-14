@@ -2,7 +2,7 @@
 <!DOCTYPE repositories SYSTEM "/dtd/repositories.dtd">
 <repositories xmlns="" version="1.0">
   <repo quality="experimental" status="unofficial">
-    <name>Emergeless</name>
+    <name>emergeless</name>
     <description lang="en">Required dependency are not mandatory</description>
     <homepage>https://github.com/g3ngr33n/emergeless</homepage>
     <owner type="person">

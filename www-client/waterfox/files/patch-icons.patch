@@ -1,0 +1,47 @@
+--- a/browser/branding/branding-common.mozbuild
++++ b/browser/branding/branding-common.mozbuild
+@@ -19,14 +19,18 @@
+             'VisualElements_70.png',
+         ]
+         BRANDING_FILES += [
+-            'bgstub.bmp',
++            'appname.bmp',
++            'bgintro.bmp',
+             'branding.nsi',
++            'clock.bmp',
+             'document.ico',
+             'firefox.ico',
+-            'firefox64.ico',
+             'newtab.ico',
+             'newwindow.ico',
++            'particles.bmp',
+             'pbmode.ico',
++            'pencil-rtl.bmp',
++            'pencil.bmp',
+             'wizHeader.bmp',
+             'wizHeaderRTL.bmp',
+             'wizWatermark.bmp',
+@@ -44,11 +48,9 @@
+             'default16.png',
+             'default22.png',
+             'default24.png',
++            'default256.png',
+             'default32.png',
+             'default48.png',
+-            'default64.png',
+-            'default128.png',
+-            'default256.png',
+             'mozicon128.png',
+         ]
+         FINAL_TARGET_FILES.icons += ['mozicon128.png']
+@@ -56,9 +58,7 @@
+             'default16.png',
+             'default22.png',
+             'default24.png',
++            'default256.png',
+             'default32.png',
+             'default48.png',
+-            'default64.png',
+-            'default128.png',
+-            'default256.png',
+         ]

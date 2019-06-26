@@ -199,6 +199,9 @@ src_configure() {
 	
 	# Fix rustc target 
 	eapply "${FILESDIR}"/rustc-target-musl
+	
+	# Fix build error https://github.com/MrAlex94/Waterfox/issues/1032
+	eapply "${FILESDIR}"/patch-icons.patch
 
 	# enable JACK, bug 600002
 	# mozconfig_use_enable jack

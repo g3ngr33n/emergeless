@@ -114,6 +114,7 @@ pkg_pretend() {
 
 src_prepare() {
 	local patch_exclude=(
+		1000_gentoo_install_dir.patch
 		2001_system_harfbuzz.patch
 		2002_system_graphite2.patch
 	)
@@ -199,12 +200,9 @@ src_configure() {
 	
 	# Fix rustc target 
 	eapply "${FILESDIR}"/rustc-target-musl
-	
-	# Fix build error https://github.com/MrAlex94/Waterfox/issues/1032
-	eapply "${FILESDIR}"/patch-icons.patch
 
-	# enable JACK, bug 600002
-	# mozconfig_use_enable jack
+	# Fix building error since introduction new icons...
+	eapply "${FILESDIR}"/patch-icons.patch
 
 	use eme-free && mozconfig_annotate '+eme-free' --disable-eme
 
@@ -318,99 +316,24 @@ src_install() {
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX}/bin/bash}" \
 	emake DESTDIR="${D}" install
 
-	# Install language packs
-	#mozlinguas_src_install
 
 	local size sizes icon_path icon name
-	#if use bindist; then
-	#	sizes="16 32 48"
-	#	icon_path="${S}/browser/branding/aurora"
-	#	# Firefox's new rapid release cycle means no more codenames
-	#	# Let's just stick with this one...
-	#	icon="aurora"
-	#	name="Aurora"
-
-	#	# Override preferences to set the MOZ_DEV_EDITION defaults, since we
-	#	# don't define MOZ_DEV_EDITION to avoid profile debaucles.
-	#	# (source: browser/app/profile/firefox.js)
-	#	cat >>"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" <<PROFILE_EOF
-#pref("app.feedback.baseURL", "https://input.mozilla.org/%LOCALE%/feedback/firefoxdev/%VERSION%/");
-#sticky_pref("lightweightThemes.selectedThemeID", "firefox-devedition@mozilla.org");
-#sticky_pref("browser.devedition.theme.enabled", true);
-#sticky_pref("devtools.theme", "dark");
-#PROFILE_EOF
-
-	#else
 		sizes="16 22 24 32 256"
 		icon_path="${S}/browser/branding/unofficial"
 		icon="${PN}"
 		name="Waterfox"
-	#fi
 
 	# Install icons and .desktop for menu entry
-	for size in ${sizes}; do
-		insinto "/usr/share/icons/hicolor/${size}x${size}/apps"
-		newins "${icon_path}/default${size}.png" "${icon}.png"
-	done
-	# The 128x128 icon has a different name
-	insinto "/usr/share/icons/hicolor/128x128/apps"
-	newins "${icon_path}/mozicon128.png" "${icon}.png"
-	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
-	newicon "${icon_path}/content/icon48.png" "${icon}.png"
-	newmenu "${FILESDIR}/icon/${PN}.desktop" "${PN}.desktop"
-	sed -i -e "s:@NAME@:${name}:" -e "s:@ICON@:${icon}:" \
-		"${ED%/}/usr/share/applications/${PN}.desktop" || die
-
-	# Add StartupNotify=true bug 237317
-	if use startup-notification ; then
-		echo "StartupNotify=true"\
-			 >> "${ED%/}/usr/share/applications/${PN}.desktop" \
-			|| die
-	fi
+	#for size in ${sizes}; do
+	#	insinto "/usr/share/icons/hicolor/${size}x${size}/apps"
+	#	newins "${icon_path}/default${size}.png" "${icon}.png"
+	#done
 
 	# Required in order to use plugins and even run firefox on hardened.
 	pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{waterfox,waterfox-bin,plugin-container}
 }
 
-pkg_preinst() {
-	gnome2_icon_savelist
-
-	# if the apulse libs are available in MOZILLA_FIVE_HOME then apulse
-	# doesn't need to be forced into the LD_LIBRARY_PATH
-	#if use pulseaudio && has_version ">=media-sound/apulse-0.1.9" ; then
-	#	einfo "APULSE found - Generating library symlinks for sound support"
-	#	local lib
-	#	pushd "${ED}"${MOZILLA_FIVE_HOME} &>/dev/null || die
-	#	for lib in ../apulse/libpulse{.so{,.0},-simple.so{,.0}} ; do
-			# a quickpkg rolled by hand will grab symlinks as part of the package,
-			# so we need to avoid creating them if they already exist.
-	#		if ! [ -L ${lib##*/} ]; then
-	#			ln -s "${lib}" ${lib##*/} || die
-	#		fi
-	#	done
-	#	popd &>/dev/null || die
-#	fi
-}
-
 pkg_postinst() {
 	# Update mimedb for the new .desktop file
 	xdg_desktop_database_update
-	gnome2_icon_cache_update
-
-	if ! use gmp-autoupdate && ! use eme-free ; then
-		elog "USE='-gmp-autoupdate' has disabled the following plugins from updating or"
-		elog "installing into new profiles:"
-		local plugin
-		for plugin in "${GMP_PLUGIN_LIST[@]}"; do elog "\t ${plugin}" ; done
-	fi
-
-	if use pulseaudio && has_version ">=media-sound/apulse-0.1.9"; then
-		elog "Apulse was detected at merge time on this system and so it will always be"
-		elog "used for sound.  If you wish to use pulseaudio instead please unmerge"
-		elog "media-sound/apulse."
-	fi
-}
-
-pkg_postrm() {
-	gnome2_icon_cache_update
 }

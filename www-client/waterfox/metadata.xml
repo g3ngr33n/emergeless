@@ -6,12 +6,10 @@
 	<name>g3ngr33n</name>
 </maintainer>
 <use>
-	<flag name="bindist">Disable official Firefox branding (icons, name) which 
-		are not binary-redistributable according to upstream.</flag>
+
 	<flag name="custom-optimization">Build with user-specified compiler optimizations
 		(-Os, -O0, -O1, -O2, -O3) from CFLAGS (unsupported)</flag>
 	<flag name="eme-free">Disable EME (DRM plugin) cabability at build time</flag>
-	<flag name="gtk2">Build with GTK:2 support instead of GTK:3</flag>
 	<flag name="hwaccel">Force-enable hardware-accelerated rendering (Mozilla bug 594876)</flag>
 	<flag name="system-harfbuzz">Use the system-wide <pkg>media-libs/harfbuzz</pkg>
 		and <pkg>media-gfx/graphite2</pkg> instead of bundled.</flag>

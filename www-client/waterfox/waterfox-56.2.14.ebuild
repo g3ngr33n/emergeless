@@ -30,7 +30,7 @@ MOZ_HTTP_URI="https://github.com/MrAlex94/Waterfox/archive"
 
 MOZCONFIG_OPTIONAL_WIFI=1
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.56 pax-utils xdg-utils autotools virtualx 
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.56 pax-utils xdg-utils autotools virtualx
 #mozlinguas-v2
 
 DESCRIPTION="Waterfox Web Browser"
@@ -40,8 +40,7 @@ KEYWORDS="~amd64 ~x86"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="eme-free gmp-autoupdate +hardened hwaccel jack nsplugin pgo selinux test pulseaudio alsa"
-#RESTRICT="!bindist? ( bindist )"
+IUSE="eme-free +hardened hwaccel jack nsplugin pgo selinux test pulseaudio alsa"
 
 PATCH_URIS=( https://dev.gentoo.org/~{anarchy,axs,polynomial-c}/mozilla/patchsets/${PATCH}.tar.xz )
 SRC_URI="
@@ -71,9 +70,9 @@ BUILD_OBJ_DIR="${S}/wf"
 
 # allow GMP_PLUGIN_LIST to be set in an eclass or
 # overridden in the enviromnent (advanced hackers only)
-if [[ -z $GMP_PLUGIN_LIST ]]; then
-	GMP_PLUGIN_LIST=( gmp-gmpopenh264 gmp-widevinecdm )
-fi
+#if [[ -z $GMP_PLUGIN_LIST ]]; then
+#	GMP_PLUGIN_LIST=( gmp-gmpopenh264 gmp-widevinecdm )
+#fi
 
 pkg_setup() {
 	moz_pkgsetup
@@ -86,14 +85,6 @@ pkg_setup() {
 		SESSION_MANAGER \
 		XDG_SESSION_COOKIE \
 		XAUTHORITY
-
-	#if ! use bindist; then
-	#	einfo
-	#	elog "You are enabling official branding. You may not redistribute this build"
-	#	elog "to any users on your network or the internet. Doing so puts yourself into"
-	#	elog "a legal problem with Mozilla Foundation"
-	#	elog "You can disable it by emerging ${PN} _with_ the bindist USE-flag"
-	#fi
 
 	if use pgo; then
 		einfo
@@ -143,7 +134,6 @@ src_prepare() {
 		sed -i \
 		-e '/^OS_LIBS += no_as_needed/d' \
 		-e '/^OS_LIBS += as_needed/d' \
-		"${S}"/widget/gtk/mozgtk/gtk2/moz.build \
 		"${S}"/widget/gtk/mozgtk/gtk3/moz.build \
 		|| die "sed failed to drop --as-needed for ia64"
 	fi
@@ -197,12 +187,12 @@ src_configure() {
 
 	mozconfig_init
 	mozconfig_config
-	
+
 	# Fix rustc target 
 	eapply "${FILESDIR}"/rustc-target-musl
 
 	# Fix building error since introduction new icons...
-	eapply "${FILESDIR}"/patch-icons.patch
+	# eapply "${FILESDIR}"/patch-icons.patch
 
 	use eme-free && mozconfig_annotate '+eme-free' --disable-eme
 
@@ -230,7 +220,6 @@ src_configure() {
 	mozconfig_annotate 'Waterfox' --with-app-basename=${PN}
 	mozconfig_annotate 'Waterfox' --with-branding=browser/branding/unofficial
 	mozconfig_annotate 'Waterfox' --with-distribution-id=org.waterfoxproject
-
 
 	# Allow for a proper pgo build
 	if use pgo; then
@@ -306,16 +295,15 @@ src_install() {
 			|| die
 	fi
 
-	local plugin
-	use gmp-autoupdate || use eme-free || for plugin in "${GMP_PLUGIN_LIST[@]}" ; do
-		echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
-			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
-			|| die
-	done
+	#local plugin
+	#use gmp-autoupdate || use eme-free || for plugin in "${GMP_PLUGIN_LIST[@]}" ; do
+	#	echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
+	#		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+	#		|| die
+	#done
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX}/bin/bash}" \
 	emake DESTDIR="${D}" install
-
 
 	local size sizes icon_path icon name
 		sizes="16 22 24 32 256"

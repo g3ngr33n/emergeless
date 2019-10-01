@@ -1,0 +1,7 @@
+*waterfox-56.2.14 (01 Oct 2019)
+
+  01 Oct 2019;  <tux@gentoo.org> +waterfox-56.2.14.ebuild,
+  -waterfox-56.2.12.ebuild, metadata.xml:
+  www-client/waterfox: Bump 56.2.14  - Ebuild cleaned, conform with repoman  -
+  Removed gmp-autoupdate, gtk2 useflag  - Patch fixing building error related to
+  the waterfox icons removed

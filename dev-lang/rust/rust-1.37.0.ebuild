@@ -13,7 +13,7 @@ MY_P="rustc-${PV}"
 SRC="${MY_P}-src.tar.xz"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
 
-RUST_STAGE0_VERSION="1.$(($(ver_cut 2) - 1)).2"
+RUST_STAGE0_VERSION="1.$(($(ver_cut 2) - 1)).0"
 
 DESCRIPTION="Systems programming language from Mozilla"
 HOMEPAGE="https://www.rust-lang.org/"
@@ -34,7 +34,7 @@ LLVM_TARGET_USEDEPS=${ALL_LLVM_TARGETS[@]/%/?}
 
 LICENSE="|| ( MIT Apache-2.0 ) BSD-1 BSD-2 BSD-4 UoI-NCSA"
 
-IUSE="clippy cpu_flags_x86_sse2 debug doc libressl rls rustfmt system-llvm ${ALL_LLVM_TARGETS[*]}"
+IUSE="clippy cpu_flags_x86_sse2 debug doc libressl miri rls rustfmt system-llvm ${ALL_LLVM_TARGETS[*]}"
 
 # Please keep the LLVM dependency block separate. Since LLVM is slotted,
 # we need to *really* make sure we're not pulling one than more slot
@@ -93,20 +93,23 @@ PATCHES=(
 	"${FILESDIR}/0004-Require-static-native-libraries-when-linking-static-.patch"
 	"${FILESDIR}/0005-Remove-nostdlib-and-musl_root-from-musl-targets.patch"
 	"${FILESDIR}/0006-Prefer-libgcc_eh-over-libunwind-for-musl.patch"
-	"${FILESDIR}/0007-runtest-Fix-proc-macro-tests-on-musl-hosts.patch"
-	"${FILESDIR}/0008-test-use-extern-for-plugins-Don-t-assume-multilib.patch"
-	"${FILESDIR}/0009-test-sysroot-crates-are-unstable-Fix-test-when-rpath.patch"
-	"${FILESDIR}/0010-Ignore-broken-and-non-applicable-tests.patch"
-	"${FILESDIR}/0011-Link-stage-2-tools-dynamically-to-libstd.patch"
-	"${FILESDIR}/0012-Move-debugger-scripts-to-usr-share-rust.patch"
-	"${FILESDIR}/0013-Add-gentoo-target-specs.patch"
+	"${FILESDIR}/0007-Fix-C-aggregate-passing-ABI-on-powerpc.patch"
+	"${FILESDIR}/0008-Fix-zero-sized-aggregate-ABI-on-powerpc.patch"
+	"${FILESDIR}/0009-compiletest-Match-suffixed-environments.patch"
+	"${FILESDIR}/0010-test-c-variadic-Fix-patterns-on-powerpc64.patch"
+	"${FILESDIR}/0011-test-use-extern-for-plugins-Don-t-assume-multilib.patch"
+	"${FILESDIR}/0012-test-sysroot-crates-are-unstable-Fix-test-when-rpath.patch"
+	"${FILESDIR}/0013-Ignore-broken-and-non-applicable-tests.patch"
+	"${FILESDIR}/0014-Link-stage-2-tools-dynamically-to-libstd.patch"
+	"${FILESDIR}/0015-Move-debugger-scripts-to-usr-share-rust.patch"
+	"${FILESDIR}/0016-Add-gentoo-target-specs.patch"
 	"${FILESDIR}/0030-libc-linkage.patch"
 	"${FILESDIR}/0040-rls-atomics.patch"
 	"${FILESDIR}/0050-llvm.patch"
 	"${FILESDIR}/0051-llvm-D45520.patch"
 	"${FILESDIR}/0052-llvm-D52013.patch"
 	"${FILESDIR}/0053-llvm-secureplt.patch"
-	"${FILESDIR}/0060-fix-build-with-libressl-2.9.1.patch"
+	"${FILESDIR}/0060-Update-libressl-support.patch"
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -156,7 +159,7 @@ src_prepare() {
 src_configure() {
 	local tools='"cargo"'
 
-	for tool in clippy rls rustfmt; do
+	for tool in clippy miri rls rustfmt; do
 		if use $tool; then
 			tools+=", \"$tool\""
 		fi
@@ -164,10 +167,10 @@ src_configure() {
 
 	cat <<- EOF > "${S}"/config.toml
 		[llvm]
-		ninja = true
 		optimize = $(toml_usex !debug)
 		release-debuginfo = $(toml_usex debug)
 		assertions = $(toml_usex debug)
+		ninja = true
 		targets = "${LLVM_TARGETS// /;}"
 		experimental-targets = ""
 		link-shared = $(toml_usex system-llvm)
@@ -183,25 +186,32 @@ src_configure() {
 		python = "${EPYTHON}"
 		locked-deps = true
 		vendor = true
+		extended = true
+		tools = [${tools}]
 		verbose = 0
 		sanitizers = false
 		profiler = false
-		extended = true
-		tools = [${tools}]
+		cargo-native-static = false
 		[install]
 		prefix = "${EPREFIX}/usr"
-		libdir = "lib"
 		docdir = "share/doc/${P}"
 		mandir = "share/${P}/man"
 		[rust]
-		optimize = $(toml_usex !debug)
-		debuginfo = $(toml_usex debug)
+		optimize = true
+		debug = $(toml_usex debug)
 		debug-assertions = $(toml_usex debug)
+		debuginfo-level-rustc = 0
+		backtrace = true
+		incremental = false
+		parallel-compiler = false
 		default-linker = "$(tc-getCC)"
 		channel = "stable"
 		rpath = false
+		verbose-tests = true
 		optimize-tests = $(toml_usex !debug)
+		codegen-tests = true
 		dist-src = false
+		backtrace-on-ice = true
 		jemalloc = false
 		[dist]
 		src-tarball = false
@@ -217,7 +227,7 @@ src_configure() {
 }
 
 src_compile() {
-	"${EPYTHON}" x.py build --config="${S}"/config.toml -j$(makeopts_jobs) --exclude src/tools/miri || die
+	"${EPYTHON}" x.py build --config="${S}"/config.toml -j$(makeopts_jobs) || die
 }
 
 src_test() {
@@ -261,6 +271,9 @@ src_install() {
 		mv "${ED}/usr/bin/cargo-clippy" "${ED}/usr/bin/cargo-clippy-${PV}" || die
 		mv "${ED}/usr/bin/clippy-driver" "${ED}/usr/bin/clippy-driver-${PV}" || die
 	fi
+	if use miri; then
+		mv "${ED}/usr/bin/miri" "${ED}/usr/bin/miri-${PV}" || die
+	fi
 	if use rls; then
 		mv "${ED}/usr/bin/rls" "${ED}/usr/bin/rls-${PV}" || die
 	fi
@@ -300,6 +313,9 @@ src_install() {
 		echo /usr/bin/cargo-clippy >> "${T}/provider-${P}"
 		echo /usr/bin/clippy-driver >> "${T}/provider-${P}"
 	fi
+	if use miri; then
+		echo /usr/bin/miri >> "${T}/provider-${P}"
+	fi
 	if use rls; then
 		echo /usr/bin/rls >> "${T}/provider-${P}"
 	fi
@@ -336,5 +352,5 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	eselect rust unset --if-invalid
+	eselect rust cleanup
 }

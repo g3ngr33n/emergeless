@@ -26,6 +26,7 @@ fi
 # Patch version
 PATCH="firefox-56.0-patches-07"
 MOZ_HTTP_URI="https://github.com/MrAlex94/Waterfox/archive"
+MY_P="2019.10-classic"
 #MOZ_LANGPACK_HTTP_URI="https://github.com/MrAlex94/www.waterfoxproject.org"
 
 MOZCONFIG_OPTIONAL_WIFI=1
@@ -33,7 +34,7 @@ MOZCONFIG_OPTIONAL_WIFI=1
 inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.56 pax-utils xdg-utils autotools virtualx
 #mozlinguas-v2
 
-DESCRIPTION="Waterfox Web Browser"
+DESCRIPTION="Waterfox Web Browser (2019.10-classic)"
 HOMEPAGE="https://www.waterfox.net"
 
 KEYWORDS="~amd64 ~x86"
@@ -44,7 +45,7 @@ IUSE="eme-free +hardened hwaccel jack nsplugin pgo selinux test pulseaudio alsa"
 
 PATCH_URIS=( https://dev.gentoo.org/~{anarchy,axs,polynomial-c}/mozilla/patchsets/${PATCH}.tar.xz )
 SRC_URI="
-	${MOZ_HTTP_URI}/${PV}.tar.gz -> ${P}.tar.gz
+	${MOZ_HTTP_URI}/${MY_P}.tar.gz -> ${P}.tar.gz
 	${PATCH_URIS[@]}"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -62,7 +63,7 @@ DEPEND="${RDEPEND}
 	amd64? ( ${ASM_DEPEND} virtual/opengl )
 	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
-S="${WORKDIR}/Waterfox-${MOZ_PV}"
+S="${WORKDIR}/Waterfox-${MY_P}"
 
 QA_PRESTRIPPED="usr/lib*/${PN}/waterfox"
 

@@ -12,8 +12,7 @@ SRC_URI="http://download.netsurf-browser.org/netsurf/releases/source/${P}-src.ta
 LICENSE="GPL-2 MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~ppc ~ppc64"
-IUSE="+bmp +duktape fbcon truetype +gif gtk gtk2 +javascript +jpeg +mng
-	pdf-writer +png +psl +rosprite +svg +svgtiny +webp"
+IUSE="bmp gif gtk jpeg mng png psl rosprite svg svgtiny webp -duktape -fbcon -gtk2 -javascript -pdf-writer -truetype"
 
 REQUIRED_USE="|| ( fbcon gtk gtk2 )
 	duktape? ( javascript )"
@@ -52,11 +51,9 @@ DEPEND="${RDEPEND}
 	dev-perl/HTML-Parser
 	>=dev-util/netsurf-buildsystem-1.7-r1"
 
-#PATCHES=(
-#	"${FILESDIR}"/${PN}-3.8-CFLAGS.patch
-#	"${FILESDIR}"/${PN}-3.6-conditionally-include-image-headers.patch
-#	"${FILESDIR}"/${PN}-3.8-pdf-writer.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/hack-useragent.patch
+)
 
 DOCS=( README docs/using-framebuffer.md
 	docs/ideas/{cache,css-engine,render-library}.txt )

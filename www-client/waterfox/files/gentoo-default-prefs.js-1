@@ -16,3 +16,6 @@ pref("general.useragent.locale", "chrome://global/locale/intl.properties");
 pref("extensions.autoDisableScopes", 0);
 pref("layout.css.dpi", 0);
 pref("ui.use_unity_menubar", false);
+pref("layout.spellcheckDefault", false);
+pref("geo.enabled", false);
+pref("browser.privatebrowsing.autostart", true);

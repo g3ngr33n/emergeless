@@ -26,7 +26,7 @@ fi
 # Patch version
 PATCH="firefox-56.0-patches-07"
 MOZ_HTTP_URI="https://github.com/MrAlex94/Waterfox/archive"
-MY_P="2019.10-classic"
+MY_P="2019.12-classic"
 #MOZ_LANGPACK_HTTP_URI="https://github.com/MrAlex94/www.waterfoxproject.org"
 
 MOZCONFIG_OPTIONAL_WIFI=1
@@ -34,7 +34,7 @@ MOZCONFIG_OPTIONAL_WIFI=1
 inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.56 pax-utils xdg-utils autotools virtualx
 #mozlinguas-v2
 
-DESCRIPTION="Waterfox Web Browser (2019.10-classic)"
+DESCRIPTION="Waterfox Web Browser (2019.12-classic)"
 HOMEPAGE="https://www.waterfox.net"
 
 KEYWORDS="~amd64 ~x86"
@@ -296,12 +296,12 @@ src_install() {
 			|| die
 	fi
 
-	#local plugin
-	#use gmp-autoupdate || use eme-free || for plugin in "${GMP_PLUGIN_LIST[@]}" ; do
-	#	echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
-	#		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
-	#		|| die
-	#done
+	local plugin
+	use gmp-autoupdate || use eme-free || for plugin in "${GMP_PLUGIN_LIST[@]}" ; do
+		echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
+			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+			|| die
+	done
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX}/bin/bash}" \
 	emake DESTDIR="${D}" install

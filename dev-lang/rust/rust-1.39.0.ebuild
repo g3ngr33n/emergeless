@@ -3,9 +3,9 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python{2_7,3_{5,6,7}} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} pypy )
 
-inherit check-reqs estack flag-o-matic llvm multiprocessing python-any-r1 toolchain-funcs
+inherit check-reqs estack flag-o-matic llvm multilib-build multiprocessing python-any-r1 rust-toolchain toolchain-funcs
 
 ABI_VER="$(ver_cut 1-2)"
 SLOT="stable/${ABI_VER}"
@@ -28,16 +28,16 @@ SRC_URI="https://static.rust-lang.org/dist/${SRC} -> rustc-${PV}-src.tar.xz
 "
 
 ALL_LLVM_TARGETS=( AArch64 AMDGPU ARM BPF Hexagon Lanai Mips MSP430
-	NVPTX PowerPC Sparc SystemZ WebAssembly X86 XCore )
+	NVPTX PowerPC RISCV Sparc SystemZ WebAssembly X86 XCore )
 ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 LLVM_TARGET_USEDEPS=${ALL_LLVM_TARGETS[@]/%/?}
 
 LICENSE="|| ( MIT Apache-2.0 ) BSD-1 BSD-2 BSD-4 UoI-NCSA"
 
-IUSE="clippy cpu_flags_x86_sse2 debug doc libressl miri rls rustfmt system-llvm ${ALL_LLVM_TARGETS[*]}"
+IUSE="clippy cpu_flags_arm_neon cpu_flags_arm_thumb2 cpu_flags_x86_sse2 debug doc libressl miri rls rustfmt system-llvm wasm ${ALL_LLVM_TARGETS[*]}"
 
 # Please keep the LLVM dependency block separate. Since LLVM is slotted,
-# we need to *really* make sure we're not pulling one than more slot
+# we need to *really* make sure we're not pulling more than one slot
 # simultaneously.
 
 # How to use it:
@@ -46,18 +46,21 @@ IUSE="clippy cpu_flags_x86_sse2 debug doc libressl miri rls rustfmt system-llvm 
 # 3. Specify LLVM_MAX_SLOT, e.g. 8.
 LLVM_DEPEND="
 	|| (
-		>=sys-devel/llvm-8:=[${LLVM_TARGET_USEDEPS// /,}]
+		>=sys-devel/llvm-9:=[${LLVM_TARGET_USEDEPS// /,}]
+		wasm? ( =sys-devel/lld-9* )
 	)
-	<sys-devel/llvm-9:=
+	<sys-devel/llvm-10:=
 "
-LLVM_MAX_SLOT=8
+LLVM_MAX_SLOT=9
 
 COMMON_DEPEND="
 	!libressl? ( dev-libs/openssl:0= )
 	libressl? ( dev-libs/libressl:0= )
+	dev-libs/libgit2:=
 	net-libs/http-parser:=
 	net-libs/libssh2:=
 	net-misc/curl:=[ssl]
+	sys-libs/libssp_nonshared:=[${MULTILIB_USEDEP}]
 	sys-libs/zlib:=
 	system-llvm? (
 		${LLVM_DEPEND}
@@ -83,6 +86,7 @@ RDEPEND="${COMMON_DEPEND}
 "
 
 REQUIRED_USE="|| ( ${ALL_LLVM_TARGETS[*]} )
+	wasm? ( llvm_targets_WebAssembly )
 	x86? ( cpu_flags_x86_sse2 )
 "
 
@@ -93,23 +97,27 @@ PATCHES=(
 	"${FILESDIR}/0004-Require-static-native-libraries-when-linking-static-.patch"
 	"${FILESDIR}/0005-Remove-nostdlib-and-musl_root-from-musl-targets.patch"
 	"${FILESDIR}/0006-Prefer-libgcc_eh-over-libunwind-for-musl.patch"
-	"${FILESDIR}/0007-Fix-C-aggregate-passing-ABI-on-powerpc.patch"
-	"${FILESDIR}/0008-Fix-zero-sized-aggregate-ABI-on-powerpc.patch"
-	"${FILESDIR}/0009-compiletest-Match-suffixed-environments.patch"
-	"${FILESDIR}/0010-test-c-variadic-Fix-patterns-on-powerpc64.patch"
-	"${FILESDIR}/0011-test-use-extern-for-plugins-Don-t-assume-multilib.patch"
-	"${FILESDIR}/0012-test-sysroot-crates-are-unstable-Fix-test-when-rpath.patch"
-	"${FILESDIR}/0013-Ignore-broken-and-non-applicable-tests.patch"
-	"${FILESDIR}/0014-Link-stage-2-tools-dynamically-to-libstd.patch"
-	"${FILESDIR}/0015-Move-debugger-scripts-to-usr-share-rust.patch"
-	"${FILESDIR}/0016-Add-gentoo-target-specs.patch"
+	"${FILESDIR}/0007-Add-target-thumbv7neon-unknown-linux-musleabihf.patch"
+	"${FILESDIR}/0008-Configure-LLVM-module-PIC-level.patch"
+	"${FILESDIR}/0009-Fix-C-aggregate-passing-ABI-on-powerpc.patch"
+	"${FILESDIR}/0010-Fix-zero-sized-aggregate-ABI-on-powerpc.patch"
+	"${FILESDIR}/0011-Link-libssp_nonshared.a-on-all-musl-targets.patch"
+	"${FILESDIR}/0012-Use-rustc-workspace-hack-for-rustbook.patch"
+	"${FILESDIR}/0013-test-failed-doctest-output-Fix-normalization.patch"
+	"${FILESDIR}/0014-test-use-extern-for-plugins-Don-t-assume-multilib.patch"
+	"${FILESDIR}/0015-test-sysroot-crates-are-unstable-Fix-test-when-rpath.patch"
+	"${FILESDIR}/0016-Ignore-broken-and-non-applicable-tests.patch"
+	"${FILESDIR}/0017-Link-stage-2-tools-dynamically-to-libstd.patch"
+	"${FILESDIR}/0018-Move-debugger-scripts-to-usr-share-rust.patch"
+	"${FILESDIR}/0019-Add-gentoo-target-specs.patch"
 	"${FILESDIR}/0030-libc-linkage.patch"
+	"${FILESDIR}/0031-typenum-pmmx.patch"
+	"${FILESDIR}/0032-libgit2-sys-abi.patch"
 	"${FILESDIR}/0040-rls-atomics.patch"
 	"${FILESDIR}/0050-llvm.patch"
-	"${FILESDIR}/0051-llvm-D45520.patch"
-	"${FILESDIR}/0052-llvm-D52013.patch"
-	"${FILESDIR}/0053-llvm-secureplt.patch"
-	"${FILESDIR}/0060-Update-libressl-support.patch"
+	"${FILESDIR}/0051-llvm-powerpc-plt.patch"
+	"${FILESDIR}/0052-llvm-powerpc-elfv2.patch"
+	"${FILESDIR}/0060-Update-libressl-support-3.x.patch"
 )
 
 S="${WORKDIR}/${MY_P}-src"
@@ -119,10 +127,10 @@ toml_usex() {
 }
 
 pre_build_checks() {
-	CHECKREQS_DISK_BUILD="7G"
+	CHECKREQS_DISK_BUILD="9G"
 	eshopts_push -s extglob
 	if is-flagq '-g?(gdb)?([1-9])'; then
-		CHECKREQS_DISK_BUILD="10G"
+		CHECKREQS_DISK_BUILD="14G"
 	fi
 	eshopts_pop
 	check-reqs_pkg_setup
@@ -133,9 +141,13 @@ pkg_pretend() {
 }
 
 pkg_setup() {
-	export RUST_BACKTRACE=1
 	pre_build_checks
 	python-any-r1_pkg_setup
+
+	export LIBGIT2_SYS_USE_PKG_CONFIG=1
+	export LIBSSH2_SYS_USE_PKG_CONFIG=1
+	export PKG_CONFIG_ALLOW_CROSS=1
+
 	if use system-llvm; then
 		llvm_pkg_setup
 		local llvm_config="$(get_llvm_prefix "$LLVM_MAX_SLOT")/bin/llvm-config"
@@ -157,7 +169,21 @@ src_prepare() {
 }
 
 src_configure() {
-	local tools='"cargo"'
+	local arch_cflags rust_target="" rust_targets="\"$CHOST\"" tools="\"cargo\""
+
+	# Collect rust target names to compile standard libs for all ABIs.
+	for v in $(multilib_get_enabled_abi_pairs); do
+		rust_target=$(rust_abi $(get_abi_CHOST ${v##*.}) | sed s/gnu/musl/)
+		rust_targets="${rust_targets},\"${rust_target}\""
+
+		if [ "$rust_target" = "armv7-unknown-linux-musleabihf" ] &&
+		   use cpu_flags_arm_neon && use cpu_flags_arm_thumb2; then
+			rust_targets="${rust_targets},\"thumbv7neon-unknown-linux-musleabihf\""
+		fi
+	done
+	if use wasm; then
+		rust_targets="${rust_targets},\"wasm32-unknown-unknown\""
+	fi
 
 	for tool in clippy miri rls rustfmt; do
 		if use $tool; then
@@ -177,7 +203,7 @@ src_configure() {
 		[build]
 		build = "${CHOST}"
 		host = ["${CHOST}"]
-		target = ["${CHOST}"]
+		target = [${rust_targets}]
 		cargo = "${WORKDIR}/stage0/bin/cargo"
 		rustc = "${WORKDIR}/stage0/bin/rustc"
 		docs = $(toml_usex doc)
@@ -211,6 +237,7 @@ src_configure() {
 		optimize-tests = $(toml_usex !debug)
 		codegen-tests = true
 		dist-src = false
+		lld = $(usex system-llvm false $(toml_usex wasm))
 		backtrace-on-ice = true
 		jemalloc = false
 		[dist]
@@ -220,13 +247,54 @@ src_configure() {
 		cxx = "$(tc-getCXX)"
 		linker = "$(tc-getCC)"
 		ar = "$(tc-getAR)"
+		crt-static = false
 	EOF
 	use system-llvm && cat <<- EOF >> "${S}"/config.toml
 		llvm-config = "$(get_llvm_prefix "$LLVM_MAX_SLOT")/bin/llvm-config"
 	EOF
+
+	for v in $(multilib_get_enabled_abi_pairs); do
+		rust_target=$(rust_abi $(get_abi_CHOST ${v##*.}) | sed s/gnu/musl/)
+		arch_cflags="$(get_abi_CFLAGS ${v##*.})"
+
+		export "CFLAGS_${rust_target//-/_}"="$CFLAGS ${arch_cflags}"
+
+		cat <<- EOF >> "${S}"/config.toml
+			[target.${rust_target}]
+			cc = "$(tc-getCC)"
+			cxx = "$(tc-getCXX)"
+			linker = "$(tc-getCC)"
+			ar = "$(tc-getAR)"
+			crt-static = false
+		EOF
+
+		if [ "$rust_target" = "armv7-unknown-linux-musleabihf" ] &&
+		   use cpu_flags_arm_neon && use cpu_flags_arm_thumb2; then
+			rust_target=thumbv7neon-unknown-linux-musleabihf
+
+			export "CFLAGS_${rust_target//-/_}"="$CFLAGS ${arch_cflags}"
+
+			cat <<- EOF >> "${S}"/config.toml
+				[target.${rust_target}]
+				cc = "$(tc-getCC)"
+				cxx = "$(tc-getCXX)"
+				linker = "$(tc-getCC)"
+				ar = "$(tc-getAR)"
+				crt-static = false
+			EOF
+		fi
+	done
+
+	if use wasm; then
+		cat <<- EOF >> "${S}"/config.toml
+			[target.wasm32-unknown-unknown]
+			linker = "$(usex system-llvm lld rust-lld)"
+		EOF
+	fi
 }
 
 src_compile() {
+	RUST_BACKTRACE=1 \
 	"${EPYTHON}" x.py build --config="${S}"/config.toml -j$(makeopts_jobs) || die
 }
 
@@ -239,13 +307,12 @@ src_test() {
 		src/test/mir-opt \
 		src/test/pretty \
 		src/test/run-fail \
-		src/test/run-fail/pretty \
 		src/test/run-make \
 		src/test/run-make-fulldeps \
-		src/test/run-pass \
-		src/test/run-pass/pretty \
-		src/test/run-pass-fulldeps \
-		src/test/run-pass-fulldeps/pretty \
+		src/test/rustdoc \
+		src/test/rustdoc-js \
+		src/test/rustdoc-js-std \
+		src/test/rustdoc-ui \
 		src/test/ui \
 		src/test/ui-fulldeps || die
 }

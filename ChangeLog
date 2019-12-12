@@ -1,0 +1,8 @@
+2019 12 12
+ 
+  * Update ebuild dev-lang/rust 
+  * Update ebuild www-client/waterfox
+  * Add ebuild sys-libs/libssp_nonshared (required by rust-1.39.0)
+  * Remove ebuild x11-libs/libva-vdpau-driver (latest fix available on the musl overlay)
+  * Remove ebuild sys-libs/compiler-rt-sanitizers (clang is now build with -compiler-rt)
+  * Remove ebuild app-emulation/spice-protocol (newer version available in the portage)

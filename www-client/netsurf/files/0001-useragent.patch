@@ -1,0 +1,69 @@
+# Add option to overwrite default useragent by settings a value to useragent inside the Choices file (about:config like)
+--- a/utils/useragent.c
++++ b/utils/useragent.c
+@@ -25,6 +25,7 @@
+ #include "desktop/version.h"
+ #include "utils/log.h"
+ #include "utils/useragent.h"
++#include "utils/nsoption.h"
+ 
+ static const char *core_user_agent_string = NULL;
+ 
+@@ -36,6 +37,8 @@
+  * Prepare core_user_agent_string with a string suitable for use as a
+  * user agent in HTTP requests.
+  */
++int uab;
++
+ static void
+ user_agent_build_string(void)
+ {
+@@ -63,18 +66,34 @@
+                  netsurf_version_minor,
+                  sysname);
+ 
+-        core_user_agent_string = ua_string;
++	if(uab == 0) {
++		core_user_agent_string = ua_string;
++	}
++
++	else {
++		core_user_agent_string = nsoption_charp(useragent); 
++	
++	}
+ 
+-        NSLOG(netsurf, INFO, "Built user agent \"%s\"",
+-              core_user_agent_string);
+ }
+-
+ /* This is a function so that later we can override it trivially */
+ const char *
+ user_agent_string(void)
+ {
+-        if (core_user_agent_string == NULL)
++	if(nsoption_charp(useragent) == NULL) {
++		uab = 0;
+                 user_agent_build_string();
++	}
++
++	else {
++		uab = 1;
++		user_agent_build_string();
++	}
++
++	if (core_user_agent_string == NULL) {
++		uab = 0;
++                user_agent_build_string();
++	}
++
+ 	return core_user_agent_string;
+ }
+-
+
+--- a/desktop/options.h
++++ b/desktop/options.h
+@@ -294,3 +294,4 @@
+ NSOPTION_STRING(log_filter, NETSURF_BUILTIN_LOG_FILTER)
+ /** Filter for verbose logging */
+ NSOPTION_STRING(verbose_filter, NETSURF_BUILTIN_VERBOSE_FILTER)
++NSOPTION_STRING(useragent, NULL)

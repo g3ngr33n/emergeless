@@ -1,3 +1,7 @@
+2019 12 13
+  
+  * Apply a proper patch for Netsurf, allowing the overwrite of the default useragent.
+
 2019 12 12
  
   * Update ebuild dev-lang/rust 

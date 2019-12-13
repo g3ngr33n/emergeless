@@ -51,17 +51,18 @@ DEPEND="${RDEPEND}
 	dev-perl/HTML-Parser
 	>=dev-util/netsurf-buildsystem-1.7-r1"
 
-PATCHES=(
-	"${FILESDIR}"/hack-useragent.patch
-)
-
 DOCS=( README docs/using-framebuffer.md
 	docs/ideas/{cache,css-engine,render-library}.txt )
+
+PATCHES=(
+	"${FILESDIR}"/0001-useragent.patch
+)
 
 src_prepare() {
 	default
 	mkdir -p build/Linux-gtk3/ || true
 	rm -r frontends/{ambuild/Linux-gtk3/iga,atari,beos,monkey,riscos,windows} || true
+
 }
 
 _emake() {

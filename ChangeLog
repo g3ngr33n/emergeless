@@ -1,3 +1,10 @@
+2019 12 25
+
+  * Sweety patch for the client spice GTK spicy : Strip the maximum to get a minimalist spice client 
+  * 2 - Mouse passthrough, allowing copy/paste host<->guest
+  * That's it. Future improvement : Less code, Auto sync the resize client gtk host / desktop guest
+  * https://www.imageupload.net/upload-image/2019/12/25/sweety.png
+
 2019 12 13
   
   * Apply a proper patch for Netsurf, allowing the overwrite of the default useragent.

@@ -1,0 +1,64 @@
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -1,4 +1,4 @@
+-bin_PROGRAMS = spicy-stats spicy-screenshot
++bin_PROGRAMS = spicy
+ 
+ EXTRA_DIST = meson.build
+ 
+@@ -12,17 +12,12 @@
+ 	$(GIO_CFLAGS)			\
+ 	$(SMARTCARD_CFLAGS)		\
+ 	$(SPICE_CFLAGS)			\
+-	$(NULL)
++	$(NULL)				\
++	$(GTK_CFLAGS)
+ 
+-if WITH_GTK
+-bin_PROGRAMS += spicy
+-TOOLS_CPPFLAGS += $(GTK_CFLAGS)
+-endif
+ 
+ spicy_SOURCES =				\
+ 	spicy.c				\
+-	spicy-connect.h 		\
+-	spicy-connect.c 		\
+ 	spice-cmdline.h			\
+ 	spice-cmdline.c			\
+ 	$(NULL)
+@@ -44,34 +39,4 @@
+ 	-Wno-deprecated-declarations	\
+ 	$(NULL)
+ 
+-spicy_screenshot_SOURCES =		\
+-	spicy-screenshot.c		\
+-	spice-cmdline.h			\
+-	spice-cmdline.c			\
+-	$(NULL)
+-
+-spicy_screenshot_LDADD =		\
+-	$(top_builddir)/src/libspice-client-glib-2.0.la	\
+-	$(GOBJECT2_LIBS)		\
+-	$(NULL)
+-
+-spicy_screenshot_CPPFLAGS =		\
+-	$(TOOLS_CPPFLAGS)		\
+-	$(NULL)
+-
+-spicy_stats_SOURCES =			\
+-	spicy-stats.c			\
+-	spice-cmdline.h			\
+-	spice-cmdline.c			\
+-	$(NULL)
+-
+-spicy_stats_LDADD =			\
+-	$(top_builddir)/src/libspice-client-glib-2.0.la	\
+-	$(GOBJECT2_LIBS) \
+-	$(NULL)
+-
+-spicy_stats_CPPFLAGS =			\
+-	$(TOOLS_CPPFLAGS)		\
+-	$(NULL)
+-
+ -include $(top_srcdir)/git.mk
+

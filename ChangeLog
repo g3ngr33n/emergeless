@@ -1,9 +1,14 @@
 2019 12 25
 
-  * Sweety patch for the client spice GTK spicy : Strip the maximum to get a minimalist spice client 
+  * Add Sweety patch to net-misc/spice-gtk 
+  * Strip the maximum of spicy to get a minimalist client spice with only
+  *
+  * 1 - A Gtk3 viewer
   * 2 - Mouse passthrough, allowing copy/paste host<->guest
-  * That's it. Future improvement : Less code, Auto sync the resize client gtk host / desktop guest
-  * https://www.imageupload.net/upload-image/2019/12/25/sweety.png
+  *
+  * 
+  * Future improvement : Less code, Auto sync the resize client gtk host / desktop guest
+  * Screenshot of the sweety : https://www.imageupload.net/upload-image/2019/12/25/sweety.png
 
 2019 12 13
   

@@ -71,6 +71,7 @@ PATCHES=(
 	"${FILESDIR}"/0001-add-qmp.patch
 	"${FILESDIR}"/0002-qmp-h.patch
 	"${FILESDIR}"/0003-qmp-c.patch
+        "${FILESDIR}"/0004-demarshallers-musl.patch
 )
 
 src_prepare() {

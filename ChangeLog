@@ -1,3 +1,9 @@
+2019 12 31
+
+  * Revert to spice-gtk-0.35. Support QMP added and fix demarshallers error
+  * Delete spice-gtk-0.37-r2, 
+  *  won't support / keep using spice higher than 0.35 release. 
+
 2019 12 25
 
   * Add Sweety patch to net-misc/spice-gtk 

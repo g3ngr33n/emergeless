@@ -1,3 +1,7 @@
+2020 02 04
+
+  * Fix missing deps for keepassx ebuild
+
 2020 01 07
 
   * Drop dev-lang/rust / www-client/waterfox and sys-libs/libssp_nonshared part of clang / llvm purge and ban

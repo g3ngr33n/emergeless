@@ -1,0 +1,17 @@
+--- a/lib/portage/package/ebuild/_config/KeywordsManager.py
++++ b/lib/portage/package/ebuild/_config/KeywordsManager.py
+@@ -64,10 +64,10 @@
+ 				recursive=1, allow_wildcard=True, allow_repo=True,
+ 				verify_eapi=False, allow_build_id=True)
+ 
+-			if pkgdict and portage._internal_caller:
+-				warnings.warn(_("%s is deprecated, use %s instead") %
+-					(user_kwrds_path, user_accept_kwrds_path),
+-					UserWarning)
++#			if pkgdict and portage._internal_caller:
++#				warnings.warn(_("%s is deprecated, use %s instead") %
++#					(user_kwrds_path, user_accept_kwrds_path),
++#					UserWarning)
+ 
+ 			for k, v in grabdict_package(
+ 				user_accept_kwrds_path,

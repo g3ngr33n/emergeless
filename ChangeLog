@@ -1,3 +1,8 @@
+2020 03 06
+
+  * Add sys-apps/portage ebuild with file patch regarding deprecated warning for package.keywords
+  * Change of password manager : app-admin/pass (https://www.passwordstore.org), app-admin/keepassx removed
+
 2020 02 04
 
   * Fix missing deps for keepassx ebuild

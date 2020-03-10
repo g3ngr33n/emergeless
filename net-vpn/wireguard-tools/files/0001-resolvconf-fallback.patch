@@ -1,0 +1,47 @@
+--- a/src/wg-quick/linux.bash
++++ b/src/wg-quick/linux.bash
+@@ -139,24 +139,43 @@
+ }
+ 
+ resolvconf_iface_prefix() {
++	if [[ -f /sbin/resolvconf ]]; then
++
+ 	[[ -f /etc/resolvconf/interface-order ]] || return 0
+ 	local iface
+ 	while read -r iface; do
+ 		[[ $iface =~ ^([A-Za-z0-9-]+)\*$ ]] || continue
+ 		echo "${BASH_REMATCH[1]}." && return 0
+ 	done < /etc/resolvconf/interface-order
++
++	fi
+ }
+ 
+ HAVE_SET_DNS=0
+ set_dns() {
+ 	[[ ${#DNS[@]} -gt 0 ]] || return 0
++
++	if [[ -f /sbin/resolvconf ]]; then
+ 	printf 'nameserver %s\n' "${DNS[@]}" | cmd resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
++	echo "[!] DNS has been set with resolvconf \n"
++	
++	else
++	printf 'nameserver %s\n' "${DNS[@]}" > /etc/resolv.conf
++	echo "[!] resolvconf is not installed, fallback to /etc/resolv.conf \n"
++	fi
++
+ 	HAVE_SET_DNS=1
+ }
+ 
+ unset_dns() {
+ 	[[ ${#DNS[@]} -gt 0 ]] || return 0
++	
++	if [[ -f /sbin/resolvconf ]]; then
+ 	cmd resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
++	
++	else
++	printf 'nameserver 127.0.0.1\n' > /etc/resolv.conf
++	fi
+ }
+ 
+ add_route() {
+ 

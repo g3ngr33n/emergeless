@@ -1,3 +1,7 @@
+2020 04 04
+
+ * Add dev-python/pykeepass : Python3 library to access/manage Keepass kdb2,kdb3,kdb4
+
 2020 03 10
 
   * Remove sys-apps/portage (revert to mainline

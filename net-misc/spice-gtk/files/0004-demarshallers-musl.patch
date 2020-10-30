@@ -1,0 +1,122 @@
+--- a/spice-common/common/generated_server_demarshallers.c
++++ b/spice-common/common/generated_server_demarshallers.c
+@@ -1484,32 +1484,6 @@
+             goto error;
+         }
+         type__value = read_uint16(pos);
+-        if (type__value == SPICE_TUNNEL_SERVICE_TYPE_IPP) {
+-            SPICE_GNUC_UNUSED uint8_t *start2 = (start + 22);
+-            uint64_t u_u__nw_size;
+-            uint16_t type__value;
+-            { /* u */
+-                uint64_t u_u__nelements;
+-                pos = start2 + 0;
+-                if (SPICE_UNLIKELY(pos + 2 > message_end)) {
+-                    goto error;
+-                }
+-                type__value = read_uint16(pos);
+-                if (type__value == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-                    u_u__nelements = 4;
+-
+-                    u_u__nw_size = u_u__nelements;
+-                } else {
+-                    u_u__nw_size = 0;
+-                }
+-
+-            }
+-
+-            u__nw_size = 2 + u_u__nw_size;
+-        } else {
+-            u__nw_size = 0;
+-        }
+-
+     }
+ 
+     nw_size = 22 + u__nw_size;
+@@ -1538,16 +1512,7 @@
+     out->name = (size_t)(message_start + consume_uint32(&in));
+     /* Reuse data from network message */
+     out->description = (size_t)(message_start + consume_uint32(&in));
+-    if (out->type == SPICE_TUNNEL_SERVICE_TYPE_IPP) {
+-        out->u.ip.type = consume_uint16(&in);
+-        if (out->u.ip.type == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-            uint64_t ipv4__nelements;
+-            ipv4__nelements = 4;
+-            memcpy(out->u.ip.u.ipv4, in, ipv4__nelements);
+-            in += ipv4__nelements;
+-        }
+-    }
+-
++    
+     assert(in <= message_end);
+ 
+     for (i = 0; i < n_ptr; i++) {
+
+--- a/spice-common/common/generated_server_marshallers.c
++++ b/spice-common/common/generated_server_marshallers.c
+@@ -1280,13 +1280,6 @@
+     /* virtual_ip */ {
+         uint8_t *ipv4__element;
+         spice_marshaller_add_uint16(m, src->virtual_ip.type);
+-        if (src->virtual_ip.type == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-            ipv4__element = src->virtual_ip.u.ipv4;
+-            for (i = 0; i < 4; i++) {
+-                spice_marshaller_add_uint8(m, *ipv4__element);
+-                ipv4__element++;
+-            }
+-        }
+     }
+ }
+ 
+--- a/spice-common/common/generated_client_demarshallers.c
++++ b/spice-common/common/generated_client_demarshallers.c
+@@ -7364,14 +7364,6 @@
+                 goto error;
+             }
+             type__value = read_uint16(pos);
+-            if (type__value == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-                virtual_ip_u__nelements = 4;
+-
+-                virtual_ip_u__nw_size = virtual_ip_u__nelements;
+-            } else {
+-                virtual_ip_u__nw_size = 0;
+-            }
+-
+         }
+ 
+         virtual_ip__nw_size = 2 + virtual_ip_u__nw_size;
+@@ -7398,12 +7390,6 @@
+     out->service_id = consume_uint32(&in);
+     /* virtual_ip */ {
+         out->virtual_ip.type = consume_uint16(&in);
+-        if (out->virtual_ip.type == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-            uint64_t ipv4__nelements;
+-            ipv4__nelements = 4;
+-            memcpy(out->virtual_ip.u.ipv4, in, ipv4__nelements);
+-            in += ipv4__nelements;
+-        }
+     }
+ 
+     assert(in <= message_end);
+
+--- a/spice-common/common/generated_client_marshallers.c
++++ b/spice-common/common/generated_client_marshallers.c
+@@ -300,17 +300,6 @@
+     spice_marshaller_add_uint32(m, src->port);
+     *name_out = spice_marshaller_get_ptr_submarshaller(m, 0);
+     *description_out = spice_marshaller_get_ptr_submarshaller(m, 0);
+-    if (src->type == SPICE_TUNNEL_SERVICE_TYPE_IPP) {
+-        uint8_t *ipv4__element;
+-        spice_marshaller_add_uint16(m, src->u.ip.type);
+-        if (src->u.ip.type == SPICE_TUNNEL_IP_TYPE_IPv4) {
+-            ipv4__element = src->u.ip.u.ipv4;
+-            for (i = 0; i < 4; i++) {
+-                spice_marshaller_add_uint8(m, *ipv4__element);
+-                ipv4__element++;
+-            }
+-        }
+-    }
+ }
+ 
+ static void spice_marshall_msgc_tunnel_service_remove(SPICE_GNUC_UNUSED SpiceMarshaller *m, SPICE_GNUC_UNUSED SpiceMsgcTunnelRemoveService *msg)
+

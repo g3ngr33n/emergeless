@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE repositories SYSTEM "/dtd/repositories.dtd">
+<repositories xmlns="" version="1.0">
+  <repo quality="experimental" status="unofficial">
+    <name>emergeless</name>
+    <description lang="en">Required dependency are not mandatory</description>
+    <homepage>https://github.com/g3ngr33n/emergeless</homepage>
+    <owner type="person">
+      <email>gengreen@tutanota.com</email>
+      <name>g3ngr33n</name>
+    </owner>
+    <source type="git">https://github.com/g3ngr33n/emergeless.git</source>
+    <source type="git">git://github.com/g3ngr33n/emergeless.git</source>
+    <feed>https://github.com/g3ngr33n/emergeless/commits/master.atom</feed>
+  </repo>
+</repositories>

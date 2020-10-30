@@ -42,8 +42,10 @@ src_prepare() {
 	# remove warning about missing file that controls features
 	# we don't currently support
 	sed -e "/installation problem/ctrue" -i rc.apparmor.functions || die
-
-        patch -p1 < apparmor-3.0.0-musl.patch --directory=../libraries/libapparmor/include/sys/	
+	
+	# Add header missing for musl (only needed if libapparmor is static)
+        #patch -p1 < "${FILESDIR}/${PN}-3.0.0-musl.patch" --directory=../libraries/libapparmor/include/sys/	
+	
 
 	# bug 634782
 	sed -e "s/cpp/$(tc-getCPP) -/" \

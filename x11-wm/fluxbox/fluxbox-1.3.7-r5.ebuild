@@ -11,7 +11,9 @@ REQUIRED_USE="systray? ( toolbar )"
 
 DESCRIPTION="X11 window manager featuring tabs and an iconbar"
 
-SRC_URI="mirror://sourceforge/fluxbox/${P}.tar.xz"
+P="fluxbox-1.3.7-r5"
+SRC_URI="https://raw.githubusercontent.com/g3ngr33n/g3ngr33n.github.io/main/archive/${P}.tar.gz"
+RESTRICT="mirror"
 HOMEPAGE="http://www.fluxbox.org"
 SLOT="0"
 LICENSE="MIT"
@@ -43,17 +45,19 @@ DEPEND="
 
 PATCHES=(
 	"${FILESDIR}"/0001-strip-fluxbox-remote.patch
-	#"${FILESDIR}"/0002-fix-nls-musl.patch
+	"${FILESDIR}"/0002-fix-fluxbox.cat.patch
 )
+
+S="${WORKDIR}/${P}"
 
 src_prepare() {
 
+	eautoreconf 
 	default
-	eautoreconf
 }
 
 src_configure() {
-
+	#sed -i 's/$(gencat_cmd) fluxbox.*.cat $(srcdir)\/.*.m/cat $(srcdir)\/Translation.m >> $(srcdir)\/fluxbox.cat || true/' "${S}"/nls/C/Makefile*
 	local myeconfargs=(
 		$(use_enable imlib imlib2)
 		$(use_enable bidi fribidi)

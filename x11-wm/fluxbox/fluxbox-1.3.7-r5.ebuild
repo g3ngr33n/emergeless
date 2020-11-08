@@ -11,10 +11,12 @@ REQUIRED_USE="systray? ( toolbar )"
 
 DESCRIPTION="X11 window manager featuring tabs and an iconbar"
 
-P="fluxbox-1.3.7-r5"
-SRC_URI="https://raw.githubusercontent.com/g3ngr33n/g3ngr33n.github.io/main/archive/${P}.tar.gz"
+PN="fluxbox"
+MY_P=${PN}-${PVR}
 RESTRICT="mirror"
+SRC_URI="mirror://g3ngr33n/archive/${MY_P}.tar.gz"
 HOMEPAGE="http://www.fluxbox.org"
+
 SLOT="0"
 LICENSE="MIT"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux"
@@ -48,7 +50,7 @@ PATCHES=(
 	"${FILESDIR}"/0002-fix-fluxbox.cat.patch
 )
 
-S="${WORKDIR}/${P}"
+S="${WORKDIR}/${MY_P}"
 
 src_prepare() {
 
@@ -57,7 +59,7 @@ src_prepare() {
 }
 
 src_configure() {
-	#sed -i 's/$(gencat_cmd) fluxbox.*.cat $(srcdir)\/.*.m/cat $(srcdir)\/Translation.m >> $(srcdir)\/fluxbox.cat || true/' "${S}"/nls/C/Makefile*
+
 	local myeconfargs=(
 		$(use_enable imlib imlib2)
 		$(use_enable bidi fribidi)
@@ -71,10 +73,6 @@ src_configure() {
 		--with-style="${EPREFIX}"/usr/share/fluxbox/styles/Emerge
 
 	)
-
-	#if use nls; then
-	#   local myeconfargs=( --enable-nls )
-	#fi
 
 	econf "${myeconfargs[@]}"
 }

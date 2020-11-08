@@ -7,9 +7,10 @@ inherit xdg
 
 DESCRIPTION="Simple GTK3 text editor"
 HOMEPAGE="http://tarot.freeshell.org/leafpad/"
-SRC_URI="https://github.com/g3ngr33n/l3afpad/archive/${PV}.tar.gz"
-
+SRC_URI="mirror://github/g3ngr33n/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
+RESTRICT="mirror"
 LICENSE="GPL-2"
+
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="emacs"

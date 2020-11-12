@@ -72,6 +72,7 @@ PATCHES=(
 	"${FILESDIR}"/0002-qmp-h.patch
 	"${FILESDIR}"/0003-qmp-c.patch
         "${FILESDIR}"/0004-demarshallers-musl.patch
+	"${FILESDIR}"/0005-fix-cve-14355.patch
 )
 
 src_prepare() {

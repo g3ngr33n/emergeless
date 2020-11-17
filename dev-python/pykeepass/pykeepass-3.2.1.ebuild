@@ -6,10 +6,10 @@ EAPI=7
 PYTHON_COMPAT=( python3_{5,6,7,8})
 
 inherit distutils-r1
-
+RESTRICT="mirror"
 DESCRIPTION="Python library to interact with keepass databases"
-HOMEPAGE="https://github.com/pschmitt/pykeepass"
-SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+HOMEPAGE="https://github.com/libkeepass/pykeepass"
+SRC_URI="mirror://g3ngr33n/archive/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -19,4 +19,6 @@ RDEPEND="dev-python/python-dateutil
 	dev-python/construct
 	dev-python/argon2-cffi
 	dev-python/pycryptodome
-	dev-python/lxml"
+	dev-python/lxml
+	dev-python/future
+	dev-python/pycryptodomex"

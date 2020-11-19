@@ -16,9 +16,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 RDEPEND="dev-python/python-dateutil
-	dev-python/construct
-	dev-python/argon2-cffi
-	dev-python/pycryptodome
+	>=dev-python/construct-2.10.54
+	>=dev-python/argon2-cffi-19.2.0
 	dev-python/lxml
 	dev-python/future
-	dev-python/pycryptodomex"
+	>=dev-python/pycryptodomex-3.9.8"

@@ -4,6 +4,7 @@
 EAPI=7
 
 XORG_DOC=doc
+XORG_TARBALL_SUFFIX="xz"
 inherit xorg-3 multilib flag-o-matic toolchain-funcs
 EGIT_REPO_URI="https://gitlab.freedesktop.org/xorg/xserver.git"
 
@@ -67,11 +68,7 @@ CDEPEND="
 	)
 	udev? ( virtual/libudev:= )
 	unwind? ( sys-libs/libunwind )
-	wayland? (
-		>=dev-libs/wayland-1.3.0
-		>=media-libs/libepoxy-1.5.4[egl(+)]
-		>=dev-libs/wayland-protocols-1.18
-	)
+
 	>=x11-apps/xinit-1.3.3-r1
 	systemd? (
 		sys-apps/dbus
@@ -100,10 +97,10 @@ DEPEND="${CDEPEND}
 RDEPEND="${CDEPEND}
 	display-manager? ( gui-libs/display-manager-init )
 	selinux? ( sec-policy/selinux-xserver )
+	wayland? ( x11-base/xwayland )
 "
 BDEPEND="
 	sys-devel/flex
-	wayland? ( dev-util/wayland-scanner )
 "
 PDEPEND="
 	xorg? ( >=x11-base/xorg-drivers-$(ver_cut 1-2) )"
@@ -126,26 +123,30 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-1.18-support-multiple-Files-sections.patch
 )
 
-pkg_setup() {
-	if use wayland && use minimal; then
-		ewarn "glamor is necessary for acceleration under Xwayland."
-		ewarn "Performance may be unacceptable without it."
-		ewarn "Build with USE=-minimal to enable glamor."
-	fi
 
+src_prepare() {
+
+	if use elibc_musl ; then
+		eapply "${FILESDIR}"/xorg-server-1.20.11-fix-musl-input_event.patch
+		eapply "${FILESDIR}"/xorg-server-1.20.11-arm-musl.patch
+	fi
+	
+	eapply_user
+}
+
+src_configure() {
 	# localstatedir is used for the log location; we need to override the default
 	#	from ebuild.sh
 	# sysconfdir is used for the xorg.conf location; same applies
 	# NOTE: fop is used for doc generating; and I have no idea if Gentoo
 	#	package it somewhere
-	XORG_CONFIGURE_OPTIONS=(
+	local XORG_CONFIGURE_OPTIONS=(
 		$(use_enable ipv6)
 		$(use_enable debug)
 		$(use_enable dmx)
 		$(use_enable kdrive)
 		$(use_enable test unit-tests)
 		$(use_enable unwind libunwind)
-		$(use_enable wayland xwayland)
 		$(use_enable !minimal record)
 		$(use_enable !minimal xfree86-utils)
 		$(use_enable !minimal dri)
@@ -162,6 +163,7 @@ pkg_setup() {
 		$(use_with doc doxygen)
 		$(use_with doc xmlto)
 		$(use_with systemd systemd-daemon)
+		--disable-xwayland
 		--enable-libdrm
 		--sysconfdir="${EPREFIX}"/etc/X11
 		--localstatedir="${EPREFIX}"/var
@@ -178,29 +180,30 @@ pkg_setup() {
 
 	if use systemd || use elogind; then
 		XORG_CONFIGURE_OPTIONS+=(
-			"--enable-systemd-logind"
-			"--disable-install-setuid"
-			"$(use_enable suid suid-wrapper)"
+			--enable-systemd-logind
+			--disable-install-setuid
+			$(use_enable suid suid-wrapper)
 		)
 	else
 		XORG_CONFIGURE_OPTIONS+=(
-			"--disable-systemd-logind"
-			"--disable-suid-wrapper"
-			"$(use_enable suid install-setuid)"
+			--disable-systemd-logind
+			--disable-suid-wrapper
+			$(use_enable suid install-setuid)
+
 		)
 	fi
+
+	xorg-3_src_configure
 }
 
-src_prepare() {
-	default
-
-	if use elibc_musl ; then
-		eapply "${FILESDIR}"/xorg-server-1.20.11-fix-musl-input_event.patch
-		eapply "${FILESDIR}"/xorg-server-1.20.11-arm-musl.patch
-	fi
-
-	eapply_user
-}
+server_based_install() {
+	if ! use xorg; then
+		rm -f "${ED}"/usr/share/man/man1/Xserver.1x \
+		"${ED}"/usr/$(get_libdir)/xserver/SecurityPolicy \
+		"${ED}"/usr/$(get_libdir)/pkgconfig/xorg-server.pc \
+		"${ED}"/usr/share/man/man1/Xserver.1x || die
+ 	fi
+ }
 
 src_install() {
 	xorg-3_src_install
